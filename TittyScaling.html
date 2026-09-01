@@ -1,0 +1,1480 @@
+<html>
+<body>
+    <style>
+        body {
+            background-color: #222222;
+            padding: 0px;
+            margin: 0px;
+            display: flex;
+            color: white;
+            user-select: none;
+            position: relative;
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.2;
+        }
+        .overlay {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            pointer-events: none;
+            top: 0px;
+            left: 0px;
+        }
+        #sidePanel {
+            background-color: #222222;
+            border: 2px solid white;
+            width: 400px;
+            height: 600px;
+            min-height: 600px;
+            margin-top: 20px;
+            position: relative;
+            flex-grow: 1;
+        }
+        #sideTabTray {
+            display: flex;
+            justify-content: space-between;
+        }
+        .sideTab {
+            font-size: 16px;
+            padding: 5px;
+            border: 2px solid white;
+            cursor: pointer;
+        }
+        .sideTab:hover {
+            background-color: #444444;
+        }
+        #sideTray {
+            width: 400px;
+            margin: 40px;
+            margin-left: 0px;
+            display: flex;
+            flex-direction: column;
+            z-index: 5;
+        }
+        #waitingForImage {
+            text-align: center;
+            font-size: 20px;
+            line-height: 30px;
+        }
+        .imageContainer {
+            margin: 40px;
+            width: 600px;
+            border: none;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #tittyImage {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: none;
+            user-select: none;
+            pointer-events: none;
+        }
+        .nodeHandle {
+            cursor: pointer;
+            pointer-events: visible;
+            fill: black;
+            opacity: 0;
+        }
+        .dimLine {
+            stroke-width: 1;
+        }
+        foreignObject {
+            font-size: 15px;
+            padding: 10px;
+            box-sizing: border-box;
+            pointer-events: all;
+            overflow: visible;
+            transform-origin: top left;
+            transform-box: border-box;
+        }
+
+        select {
+            pointer-events: visible;
+            width: 100%;
+        }
+
+        input {
+            pointer-events: visible;
+        }
+
+        input[type="number"] {
+            width: 111%;
+            display: inline-block;
+            margin-bottom: 2px;
+            margin-top: -2.5px;
+            transform: scale(0.9);
+            transform-origin: left;
+        }
+
+        foreignObject input[type="range"] {
+            width: 160%;
+            transform: scale(0.6);
+            transform-origin: left;
+            position: relative;
+        }
+
+        .svgText .text {
+            text-wrap: nowrap;
+            width: fit-content;
+            transform-origin: top left;
+        }
+
+        .svgText foreignObject {
+            padding: 0px;
+            border: none;
+        }
+
+        .textHandle {
+            position: absolute;
+            top: -5px;
+            border: 2px solid white;
+            background: #222222;
+            opacity: 0;
+            height: 10px;
+            width: 10px;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .leftHandle {
+            left: -5px;
+        }
+
+        .rightHandle {
+            right: -5px;
+            border-radius: 10px;
+        }
+
+
+        .svgText:hover .textHandle {
+            opacity: 1;
+        }
+
+        .resetButton {
+            font-family: Lucida Sans Unicode;
+            float: right;
+            border: 2px solid white;
+            margin: 3px;
+            padding: 2px;
+            line-height: 16px;
+            pointer-events: all;
+            z-index: 1000;
+        }
+        .resetButton:hover {
+            background-color: red;
+            cursor: pointer;
+        }
+        #screenshotOutput {
+            max-width: 400px;
+            max-height: 300px;
+            margin-top: 10px;
+        }
+        #exportSettings {
+            width: 90%;
+            height: 100%;
+            position: relative;
+            top: 0px;
+            left: 0px;
+        }
+        #lowerLine {
+            border: 2px solid white;
+            border-bottom: none;
+            width: 100%;
+            height: 5px;
+            position: absolute;
+            top: 0px;
+            z-index: -1;
+            box-sizing: border-box;
+        }
+        
+
+
+    </style>
+    <div class="imageContainer">
+        <div id="waitingForImage">
+            To get started, paste an image URL here: <input type="url" id="urlInput" />
+            <br>OR
+            <br>Upload an image here: <input type="file" id="fileInput" accept="image/*" />
+            <br>OR
+            <br>Just paste the image directly onto this page.
+            <br>We're chill like that.
+        </div>
+        <img id="tittyImage"/>
+    </div>
+    <div id="sideTray">
+        <div id="sideTabTray">
+            <div class="sideTab" onclick="switchTabs('dimensions')">Dimensions</div>
+            <div class="sideTab" onclick="switchTabs('volume')">Volume</div>
+            <div class="sideTab" onclick="switchTabs('clothing')">Clothing</div>
+            <div class="sideTab" onclick="switchTabs('milk')">Milk</div>
+            <div class="sideTab" onclick="switchTabs('export')">Export</div>
+        </div>
+        <div id="sidePanel">
+            <div class="resetButton" onclick="resetSVG()">&#x21bb;</div>
+            <div id="exportSettings">
+                <div style='padding: 10px;'>
+                    If you want to add your own custom text,
+                    <br>you can do it here. <span style="font-size: 8px">Yes it looks bad, I'm not great at this.</span>
+                    <br><textArea id="customTextBox" style="max-width: 380px; max-height: 100px;"></textArea>
+                    <br><button id="newTextButton">Create</button> <button id="updateTextButton">Update</button> <input id='customColorSelect'type="color" value="#ffffff"/>
+                    <br>Change the color of all the other text with this: <input id='globalColorSelect' type="color" value="#ffffff"/>
+                    <br>
+                    <br>Satisfied with your beautiful creation? <button id="screenshotButton">Export!</button>
+                </div>
+                <canvas id="screenshotOutput"></canvas>
+                <div style="display: flex; justify-content:space-around">
+                    <button id="saveToClipboard">Save To Clipboard</button>
+                    <button id="saveToFile">Save To File</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <svg id='dimensionsOverlay' class="overlay" style="stroke: #ffffff">
+        
+        <g id="referenceDim" class="dimension" style="stroke: #ffffff;" data-target="reference">
+            <rect x="-12.5" y="-12.5" width="25" height="25" class="nodeHandle" data-number="1"/>
+            <rect x="-12.5" y="-12.5" width="25" height="25" class="nodeHandle" data-number="2"/>
+            <line x1="0" x2="0" y1="0" y2="0" class="dimLine"/>
+            <line x1="0" x2="0" y1="0" y2="0" class="dimLine"/>
+            <line x1="0" x2="0" y1="0" y2="0" class="dimLine"/>
+        </g>
+
+        <g id="referenceSliders" class="immovable">
+            <foreignObject x="0" y="0" width="130" height="100" style="border: 2px solid white;">
+                <input type="range" class="slider" style="accent-color:#ff0000" min="0" max="255" value="255"></input>
+                <input type="range" class="slider" style="accent-color:#00ff00" min="0" max="255" value="255"></input>
+                <input type="range" class="slider" style="accent-color:#0000ff" min="0" max="255" value="255"></input>
+                <input type="range" class="slider" style="accent-color:#ffffff" min="0" max="40" value="10"></input>
+
+            </foreignObject>
+        </g>
+
+        <g id="referenceSelect" class="immovable">
+            <foreignObject x="0" y="0" width="130" height="50" style="border: 2px solid white; padding: 5px; font-size: 12px;">
+                <input type="number" value=170 id="referenceMeasurement"></input>
+                <select class="unitSelect">
+                    <option value="mm" >millimeters</option>
+                    <option value="cm" selected>centimeters</option>
+                    <option value="in">inches</option>
+                    <option value="ft">feet</option>
+                    <option value="m">meters</option>
+                    <option value="km">kilometers</option>
+                    <option value="mi">miles</option>
+                    <option value="EL">earth-lengths</option>
+                    <option value="AU">astronomical units</option>
+                    <option value="LY">light-years</option>
+                    <option value="U">universes</option>
+                </select>
+            </foreignObject>
+        </g>
+
+        <g id="dim1" class="dimension" style="stroke: #ffffff;" data-target="dim1">
+            <rect x="-12.5" y="-12.5" width="25" height="25" class="nodeHandle" data-number="1"/>
+            <rect x="-12.5" y="-12.5" width="25" height="25" class="nodeHandle" data-number="2"/>
+            <line x1="0" x2="0" y1="0" y2="0" class="dimLine"/>
+            <line x1="0" x2="0" y1="0" y2="0" class="dimLine"/>
+            <line x1="0" x2="0" y1="0" y2="0" class="dimLine"/>
+        </g>
+
+        <g id="dim1Sliders" class="immovable">
+            <foreignObject x="0" y="0" width="130" height="100" style="border: 2px solid white;">
+                <input type="range" class="slider" style="accent-color:#ff0000" min="0" max="255" value="255"></input>
+                <input type="range" class="slider" style="accent-color:#00ff00" min="0" max="255" value="127"></input>
+                <input type="range" class="slider" style="accent-color:#0000ff" min="0" max="255" value="127"></input>
+                <input type="range" class="slider" style="accent-color:#ffffff" min="0" max="40" value="10"></input>
+
+            </foreignObject>
+        </g>
+
+        <g id="dim1Select" class="immovable">
+            <foreignObject x="0" y="0" width="130" height="50" style="border: 2px solid white; padding: 5px; font-size: 12px;">
+                <br>
+                <select class="unitSelect">
+                    <option value="auto" selected>auto</option>
+                    <option value="mm">millimeters</option>
+                    <option value="cm">centimeters</option>
+                    <option value="in">inches</option>
+                    <option value="ft">feet</option>
+                    <option value="m">meters</option>
+                    <option value="km">kilometers</option>
+                    <option value="mi">miles</option>
+                    <option value="EL">earth-lengths</option>
+                    <option value="AU">astronomical units</option>
+                    <option value="LY">light-years</option>
+                    <option value="U">universes</option>
+                </select>
+            </foreignObject>
+        </g>
+
+        <g id="dim2" class="dimension" style="stroke: #ffffff;" data-target="dim2">
+            <rect x="-12.5" y="-12.5" width="25" height="25" class="nodeHandle" data-number="1"/>
+            <rect x="-12.5" y="-12.5" width="25" height="25" class="nodeHandle" data-number="2"/>
+            <line x1="0" x2="0" y1="0" y2="0" class="dimLine"/>
+            <line x1="0" x2="0" y1="0" y2="0" class="dimLine"/>
+            <line x1="0" x2="0" y1="0" y2="0" class="dimLine"/>
+        </g>
+
+        <g id="dim2Sliders" class="immovable">
+            <foreignObject x="0" y="0" width="130" height="100" style="border: 2px solid white;">
+                <input type="range" class="slider" style="accent-color:#ff0000" min="0" max="255" value="127"></input>
+                <input type="range" class="slider" style="accent-color:#00ff00" min="0" max="255" value="255"></input>
+                <input type="range" class="slider" style="accent-color:#0000ff" min="0" max="255" value="127"></input>
+                <input type="range" class="slider" style="accent-color:#ffffff" min="0" max="40" value="10"></input>
+
+            </foreignObject>
+        </g>
+
+        <g id="dim2Select" class="immovable">
+            <foreignObject x="0" y="0" width="130" height="50" style="border: 2px solid white; padding: 5px; font-size: 14px; line-height:17px;">
+                Disabled: <input type="checkBox" title="This prevents this ruler's value from being used in future size calculations."></input>
+                <select class="unitSelect">
+                    <option value="auto" selected>auto</option>
+                    <option value="mm">millimeters</option>
+                    <option value="cm">centimeters</option>
+                    <option value="in">inches</option>
+                    <option value="ft">feet</option>
+                    <option value="m">meters</option>
+                    <option value="km">kilometers</option>
+                    <option value="mi">miles</option>
+                    <option value="EL">earth-lengths</option>
+                    <option value="AU">astronomical units</option>
+                    <option value="LY">light-years</option>
+                    <option value="U">universes</option>
+                </select>
+            </foreignObject>
+        </g>
+
+        <g id="dim3" class="dimension" style="stroke: #ffffff;" data-target="dim3">
+            <rect x="-12.5" y="-12.5" width="25" height="25" class="nodeHandle" data-number="1"/>
+            <rect x="-12.5" y="-12.5" width="25" height="25" class="nodeHandle" data-number="2"/>
+            <line x1="0" x2="0" y1="0" y2="0" class="dimLine"/>
+            <line x1="0" x2="0" y1="0" y2="0" class="dimLine"/>
+            <line x1="0" x2="0" y1="0" y2="0" class="dimLine"/>
+        </g>
+
+        <g id="dim3Sliders" class="immovable">
+            <foreignObject x="0" y="0" width="130" height="100" style="border: 2px solid white;">
+                <input type="range" class="slider" style="accent-color:#ff0000" min="0" max="255" value="127"></input>
+                <input type="range" class="slider" style="accent-color:#00ff00" min="0" max="255" value="127"></input>
+                <input type="range" class="slider" style="accent-color:#0000ff" min="0" max="255" value="255"></input>
+                <input type="range" class="slider" style="accent-color:#ffffff" min="0" max="40" value="10"></input>
+
+            </foreignObject>
+        </g>
+
+        <g id="dim3Select" class="immovable">
+            <foreignObject x="0" y="0" width="130" height="50" style="border: 2px solid white; padding: 5px; font-size: 14px;">
+                Disabled: <input type="checkBox" title="This prevents this ruler's value from being used in future size calculations."></input>
+                <select class="unitSelect">
+                    <option value="auto" selected>auto</option>
+                    <option value="mm">millimeters</option>
+                    <option value="cm">centimeters</option>
+                    <option value="in">inches</option>
+                    <option value="ft">feet</option>
+                    <option value="m">meters</option>
+                    <option value="km">kilometers</option>
+                    <option value="mi">miles</option>
+                    <option value="EL">earth-lengths</option>
+                    <option value="AU">astronomical units</option>
+                    <option value="LY">light-years</option>
+                    <option value="U">universes</option>
+                </select>
+            </foreignObject>
+        </g>
+        
+    </svg>
+    <svg id='volumeOverlay' class="overlay" style="stroke: #ffffff">
+
+        <g id="volumeSelect" class="immovable">
+            <foreignObject x="0" y="0" width="130" height="30" style="border: 2px solid white; padding: 5px; font-size: 14px;">
+                <select class="unitSelect">
+                    <option value="auto" selected>auto</option>
+                    <option value="mm">millimeters</option>
+                    <option value="cm">centimeters</option>
+                    <option value="in">inches</option>
+                    <option value="L">liters</option>
+                    <option value="G">gallons</option>
+                    <option value="ft">feet</option>
+                    <option value="m">meters</option>
+                    <option value="km">kilometers</option>
+                    <option value="mi">miles</option>
+                    <option value="EL">earths</option>
+                    <option value="AU">astronomical units</option>
+                    <option value="LY">light-years</option>
+                    <option value="U">universes</option>
+                </select>
+            </foreignObject>
+        </g>
+
+        <g id="densitySelect" class="immovable">
+            <foreignObject x="0" y="0" width="130" height="50" style="border: 2px solid white; padding: 5px; font-size: 14px; line-height: 14px;">
+                Density: <input type="number" value="0.945" style="margin-top: 3px;"  title="Water has a density of 1. Breast tissue has a typical density of 0.945, meaning it floats."></input>
+            </foreignObject>
+        </g>
+
+        <g id="massSelect" class="immovable">
+            <foreignObject x="0" y="0" width="130" height="30" style="border: 2px solid white; padding: 5px; font-size: 14px;">
+                <select class="unitSelect">
+                    <option value="auto" selected>auto</option>
+                    <option value="g">grams</option>
+                    <option value="oz">ounces</option>
+                    <option value="lb">pounds</option>
+                    <option value="kg">kilograms</option>
+                    <option value="ton">metric tons</option>
+                    <option value="kt">kilotons</option>
+                    <option value="mt">megatons</option>
+                    <option value="EM">earth-masses</option>
+                    <option value="SM">solar masses</option>
+                    <option value="GM">galactic masses</option>
+                    <option value="UM">universal masses</option>
+                </select>
+            </foreignObject>
+        </g>
+
+        <g id="growthSelect1" class="immovable">
+            <foreignObject x="0" y="0" width="130" height="85" style="border: 2px solid white; padding: 5px; font-size: 14px;">
+                <input type="number" value="1" style="margin-top: 0px;"></input>
+                <select class="unitSelect">
+                    <option value="mm">millimeters</option>
+                    <option value="cm" selected>centimeters</option>
+                    <option value="in">inches</option>
+                    <option value="ft">feet</option>
+                    <option value="m">meters</option>
+                    <option value="km">kilometers</option>
+                    <option value="mi">miles</option>
+                    <option value="EL">earths</option>
+                    <option value="AU">astronomical units</option>
+                    <option value="LY">light-years</option>
+                    <option value="U">universes</option>
+                </select>
+                per
+                <select class="unitSelect">
+                    <option value="ms">millisecond</option>
+                    <option value="sec">second</option>
+                    <option value="min">minute</option>
+                    <option value="hour" selected>hour</option>
+                    <option value="day" >day</option>
+                    <option value="week">week</option>
+                    <option value="month">month</option>
+                    <option value="year">year</option>
+                </select>
+            </foreignObject>
+        </g>
+
+        <g id="growthSelect2" class="immovable">
+            <foreignObject x="0" y="0" width="130" height="63" style="border: 2px solid white; padding: 5px; font-size: 14px;">
+                <select class="unitSelect">
+                    <option value="auto" selected>auto</option>
+                    <option value="g">grams</option>
+                    <option value="oz">ounces</option>
+                    <option value="lb">pounds</option>
+                    <option value="kg">kilograms</option>
+                    <option value="ton">metric tons</option>
+                    <option value="kt">kilotons</option>
+                    <option value="mt">megatons</option>
+                    <option value="EM">earth-masses</option>
+                    <option value="SM">solar masses</option>
+                    <option value="GM">galactic masses</option>
+                    <option value="UM">universal masses</option>
+                </select>
+                per
+                <select class="unitSelect">
+                    <option value="ms">millisecond</option>
+                    <option value="sec">second</option>
+                    <option value="min" selected>minute</option>
+                    <option value="hour">hour</option>
+                    <option value="day">day</option>
+                    <option value="week">week</option>
+                    <option value="month">month</option>
+                    <option value="year">year</option>
+                </select>
+            </foreignObject>
+        </g>
+    </svg>
+    <svg id='clothingOverlay' class="overlay" style="stroke: #ffffff">
+
+    </svg>
+    <svg id='milkOverlay' class="overlay" style="stroke: #ffffff">
+
+    </svg>
+    <svg id='exportOverlay' class="overlay" style="stroke: #ffffff">
+
+    </svg>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.js"></script>
+    <script>
+
+        var rulers = {
+            reference: {
+                x1: 0,
+                y1: 0,
+                x2: 0,
+                y2: 0,
+                length: 0,
+                red: 255,
+                green: 255,
+                blue: 255,
+                type: "ruler",
+                flange: 10,
+                thickness: 1,
+                group: document.getElementById("referenceDim"),
+                text: "referenceText"
+            },
+            dim1: {
+                x1: 0,
+                y1: 0,
+                x2: 0,
+                y2: 0,
+                length: 0,
+                red: 255,
+                green: 127,
+                blue: 127,
+                type: "ruler",
+                flange: 10,
+                thickness: 1,
+                group: document.getElementById("dim1"),
+                text: "dim1Text"
+            },
+            dim2: {
+                x1: 0,
+                y1: 0,
+                x2: 0,
+                y2: 0,
+                length: 0,
+                red: 127,
+                green: 255,
+                blue: 127,
+                type: "ruler",
+                flange: 10,
+                thickness: 1,
+                group: document.getElementById("dim2"),
+                text: "dim2Text"
+            },
+            dim3: {
+                x1: 0,
+                y1: 0,
+                x2: 0,
+                y2: 0,
+                length: 0,
+                red: 127,
+                green: 127,
+                blue: 255,
+                type: "ruler",
+                flange: 10,
+                thickness: 1,
+                group: document.getElementById("dim3"),
+                text: "dim3Text"
+            },
+        }
+
+        const units = {
+            mm: 0.001,
+            cm: 0.01,
+            in: 0.0254,
+            L: 0.1,
+            G: 0.1558,
+            ft: 0.3048,
+            m: 1,
+            km: 1000,
+            mi: 1609.34,
+            EL: 12756000,
+            AU: 149600000000,
+            LY: 9460500000000000,
+            U: 880000000000000000000000000,
+            g: 0.001,
+            oz: 0.0283,
+            lb: 0.4536,
+            kg: 1,
+            ton: 1000,
+            kt: 1000000,
+            mt: 1000000000,
+            tt: 1000000000000,
+            EM: 5972000000000000000000000,
+            SM: 1989000000000000000000000000000,
+            GM: 3000000000000000000000000000000000000000000,
+            UM: 150000000000000000000000000000000000000000000000000000,
+            ms: 0.001,
+            sec: 1,
+            min: 60,
+            hour: 3600,
+            day: 86400,
+            week: 604800,
+            month: 1626000,
+            year: 31450000
+        }
+
+        const suffixes = {
+            mm: ["mm", "mm", 10, " cubic millimeter", " cubic millimeters"],
+            cm: ["cm", "cm", 10, " cubic centimeter", " cubic centimeters"],
+            in: ["in", "in", 100, " cubic inch", " cubic inches"],
+            L: [0, 0, 10, " liter", " liters"],
+            G: [0, 0,  10, " gallon", " gallons"],
+            ft: ["ft", "ft", 100, " cubic foot", " cubic feet"],
+            m: ["m", "m", 100, " cubic meter", " cubic meters"],
+            km: ["km", "km", 100, " cubic kilometer", " cubic kilometers"],
+            mi: [" mile", " miles", 10, " cubic mile", " cubic miles"],
+            EL: [" earth-length", " earth-lengths", 10, " earth", " earths"],
+            AU: ["AU", "AU", 10, " cubic AU", " cubic AU"],
+            LY: [" light-year", " light-years", 10, " cubic light-year", " cubic light-years"],
+            U: [" universe", " universes", 10, " universe", " universes"],
+            g: [" gram", " grams", 10],
+            oz: [" ounce", " ounces", 10],
+            lb: [" pound", " pounds", 10],
+            kg: [" kilogram", " kilograms", 10],
+            ton: [" ton", " tons", 10],
+            kt: [" kiloton", " kilotons", 10],
+            mt: [" megaton", " megatons", 10],
+            tt: [" teratons", " teratons", 10],
+            EM: [" earth-mass", " earth-masses", 10],
+            SM: [" solar mass", " solar masses", 10],
+            GM: [" galactic mass", " galactic masses", 10],
+            UM: [" universal mass", " universal masses", 10],
+            ms: "millsecond",
+            sec: "second",
+            min: "minute",
+            hour: "hour",
+            day: "day",
+            week: "week",
+            month: "month",
+            year: "year"
+        }
+
+        var currentTab = "dimensions"
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext('2d');
+        var customTexts = 0;
+
+        const rgbToHex = (r, g, b) => {
+            const toHex = (value) => value.toString(16).padStart(2, '0');
+            return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+        };
+
+        function switchTabs(tab) {
+            for(let element of document.getElementsByClassName("overlay")) {
+                if(element.id == (tab + "Overlay")) {
+                    element.style.zIndex = 10;
+                } else {
+                    element.style.zIndex = 0;
+                }
+            }
+            currentTab = tab;
+            if(currentTab == "export") {
+                document.getElementById("exportSettings").style.display = 'block';
+                //takeScreenshot();
+            } else {
+                document.getElementById("exportSettings").style.display = 'none';
+            }
+        }
+
+        switchTabs('dimensions');
+
+        function generateText(tab, id, width, text, presets = {red: 255, green: 255, blue: 255}) {
+            let svg = document.getElementById(tab + "Overlay");
+
+            let group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            group.id = id;
+            group.classList.add("svgText");
+            let foreignObject = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
+            foreignObject.setAttribute("width", width);
+            foreignObject.setAttribute("height", 30);
+            foreignObject.dataset.target = id;
+            group.appendChild(foreignObject);
+            let textElement = document.createElement('div');
+            textElement.classList.add("text");
+            textElement.innerHTML = text;
+            let leftHandle = document.createElement('div');
+            leftHandle.classList.add("textHandle", "leftHandle");
+            //leftHandle.dataset.number = "1";
+            let rightHandle = document.createElement('div');
+            rightHandle.classList.add("textHandle", "rightHandle");
+            //rightHandle.dataset.number = "2";
+
+
+            leftHandle.addEventListener('mousedown', function(event) {
+                currentlyGrabbed = rulers[id];
+                grabbedNode = 1;
+            })
+            rightHandle.addEventListener('mousedown', function(event) {
+                currentlyGrabbed = rulers[id];
+                grabbedNode = 2;
+            })
+            group.setAttribute('onclick', 'selectText(this)')
+        
+
+            foreignObject.appendChild(textElement);
+            foreignObject.appendChild(leftHandle);
+            foreignObject.appendChild(rightHandle);
+            svg.appendChild(group);
+
+            rulers[id] = {
+                x1: 0,
+                y1: 0,
+                x2: 0,
+                y2: 0,
+                red: presets.red,
+                green: presets.green,
+                blue: presets.blue,
+                type: "text",
+                group: group
+            }
+            updateTextBox(id);
+        }
+
+        function selectText(element) {
+            while(document.getElementsByClassName('selectedText')[0] != undefined && document.getElementsByClassName('selectedText')[0] != element) {
+                document.getElementsByClassName('selectedText')[0].classList.remove('selectedText');
+            }
+            if(element.classList.contains('selectedText') || !element.id.includes("newText")) {
+                element.classList.remove('selectedText');
+                document.getElementById('lowerLine').remove();
+            } else {
+                element.classList.add('selectedText');
+
+            if(document.getElementById('lowerLine') == undefined) {
+                let line = document.createElement('div');
+                line.id = 'lowerLine';
+                element.children[0].appendChild(line);
+            }
+            element.children[0].appendChild(document.getElementById('lowerLine'));
+            //document.getElementById('customTextBox').value = element.children[0].children[0].innerText;
+            let id = element.children[0].dataset.target;
+            //document.getElementById('customColorSelect').value = rgbToHex(rulers[id].red,rulers[id].green,rulers[id].blue);
+            //updateTextBox(id);
+            //updateLine(id);
+            //Trying to make it match the selected element's text just means that it annoyingly erases all progress with a misclick.
+            }
+            
+        }
+
+        function updateText() {
+            let group = document.getElementsByClassName('selectedText')[0];
+            if(group == undefined) {
+                return;
+            } else {
+                let id = group.children[0].dataset.target;
+                let color = document.getElementById('customColorSelect').value
+                rulers[id].red = parseInt(color.substring(1, 3), 16);
+                rulers[id].green = parseInt(color.substring(3, 5), 16);
+                rulers[id].blue = parseInt(color.substring(5, 7), 16);
+                group.children[0].children[0].innerText = document.getElementById('customTextBox').value
+                updateTextBox(id);
+                updateLine(id);
+            }
+        }
+
+        generateText("dimensions", "tutorialText1", 350, "Use the first ruler to measure a known length,<br>like the character's height or a visible landmark.");
+        generateText("dimensions", "tutorialText2", 350, "Then use the next three to measure the boobs.<br>You can move the length numbers around, too.<br>Hold shift to snap to an angle.");
+        generateText("dimensions", "tutorialText3", 350, "Measure from as many directions as possible for accuracy.<br>Disable the rulers you won't use.");
+
+        generateText("dimensions", "referenceText", 90, "170cm");
+        generateText("dimensions", "dim1Text", 90, "170cm");
+        generateText("dimensions", "dim2Text", 90, "170cm");
+        generateText("dimensions", "dim3Text", 90, "170cm");
+
+        generateText("volume", "tutorialText4", 250, "All the calculations done in this and later tabs use<br>the size determined in the Dimensions tab.");
+        generateText("volume", "volumeCalc", 350, "Unupdated");
+        generateText("volume", "volumeText", 200, "Unupdated");
+        generateText("volume", "perTitty", 40, "(per titty)");
+        generateText("volume", "totalVolume", 105, "Total Volume =");
+        generateText("volume", "totalDensity", 70, "Density =");
+        generateText("volume", "densityText", 170, "0.945 g/cm^3");
+        generateText("volume", "totalMass", 90, "Total Mass =");
+        generateText("volume", "massText", 200, "real heavy");
+        generateText("volume", "perTitty2", 40, "(per titty)");
+        generateText("volume", "growthText1", 230, "If her breasts grew by 1cm each week...");
+        generateText("volume", "growthText2", 270, "...Each boob would get 1kg heavier every second.");
+        generateText("volume", "tutorialText5", 370, "Note that boobs are almost as dense as water, and water weighs a <em>lot</em>.<br>The only reason you don't think of water (and therefore boobs) as heavy<br>is because you usually don't hold a lot of it at once.<br>Most of what we carry is small, hollow, or both.<br>As a thought exercise, think of how heavy a gallon jug of milk is.<br>Now think about how many gallons could fit in those tiddays.");
+
+        generateText("clothing", "tutorialText6", 360, "This is too much work lmao<br>If you want me to update this, bug me somewhere.<br>Bsky, discord, FA, I'm everywhere.<Br>Not twitter tho.<br>Everywhere of relevance.");
+        /*generateText("clothing", "tutorialText6", 360, "This part's a bit of an approximation.<br>(Not like the other tabs, which have been remarkably exact)<br>It's assumed that the cost of a piece of clothing is equal to a version<br>without the boobs, plus the cost of the extra fabric.");
+        generateText("clothing", "totalSurface", 105, "Bust surface area =");
+        generateText("clothing", "surfaceText", 200, "Unupdated");*/
+        
+        generateText("milk", "tutorialText7", 360, "Yknow, I actually did a cool lil math segment<br>if you're interested in the physics of milk.<br><a style='color:lightBlue' href='https://drive.google.com/file/d/1ovRZ7gbjbVHSi-djpUUU25U41CHCwnL8/view'>You can learn all about it here.</a><br>I will be updating this calculator eventually, tho.");
+
+        generateText("export", "supportMeDammit", 400, "Want to support the developer? Draw art of my <a style='color:lightBlue' href='https://www.furaffinity.net/gallery/roannethewolf/folder/1611772/The-White-Fox/' target='_blank'>gigatitty fox</a>. Or any gigatitty fox, but preferably mine.<br>Patreon is for dweebs. My army shall grow, in the most literal sense.");
+
+        function resetSVG() {
+            positionHandles(currentTab);
+        }
+
+        function positionLineStupid(line, x1, y1) {
+            let box = document.getElementById("sidePanel").getBoundingClientRect();
+            [rulers[line].x1, rulers[line].y1] = [box.x + box.width*x1, box.y + box.height*y1];
+            rulers[line].x2 = rulers[line].x1 + rulers[line].group.children[0].width.baseVal.value;
+            rulers[line].y2 = rulers[line].y1;
+            updateLine(rulers[line]);
+        }
+
+        function positionHandles(tab) {
+            //Move the handles to the appropriate place on startup. Targets a specific tab at a time.
+            var screen = document.getElementById("dimensionsOverlay").getBoundingClientRect();
+            var box = document.getElementById("sidePanel").getBoundingClientRect();
+
+            document.getElementById(tab + "Overlay").setAttribute("viewBox", "0 0 " + screen.width + " " + screen.height);
+
+            function moveToCoord(element, x, y) {
+                element.setAttribute('x', box.x + box.width * x);
+                element.setAttribute('y', box.y + box.height * y);
+            }
+
+            function getCoord(x, y) {
+                return[box.x + box.width*x, box.y + box.height*y];
+            }
+
+            function positionLine(line, x1, y1, x2) {
+                [rulers[line].x1, rulers[line].y1] = getCoord(x1, y1);
+                rulers[line].y2 = rulers[line].y1; 
+                if(rulers[line].type == "text") {
+                    rulers[line].x2 = rulers[line].x1 + rulers[line].group.children[0].width.baseVal.value;
+                } else {
+                    rulers[line].x2 = getCoord(x2, y1)[0];
+                }
+                updateLine(rulers[line]);
+            }
+
+            switch(tab) {
+                case "dimensions":
+                [rulers.reference.x1, rulers.reference.y1] = getCoord(0.05, 0.13);
+                [rulers.reference.x2, rulers.reference.y2] = getCoord(0.6, 0.13);
+                updateLine(rulers.reference);
+
+                [rulers.dim1.x1, rulers.dim1.y1] = getCoord(0.05, 0.42);
+                [rulers.dim1.x2, rulers.dim1.y2] = getCoord(0.6, 0.42);
+                updateLine(rulers.dim1);
+
+                [rulers.dim2.x1, rulers.dim2.y1] = getCoord(0.05, 0.6);
+                [rulers.dim2.x2, rulers.dim2.y2] = getCoord(0.6, 0.6);
+                updateLine(rulers.dim2);
+
+                [rulers.dim3.x1, rulers.dim3.y1] = getCoord(0.05, 0.78);
+                [rulers.dim3.x2, rulers.dim3.y2] = getCoord(0.6, 0.78);
+                updateLine(rulers.dim3);
+
+                positionLine("referenceText", 0.04, 0.18);
+                positionLine("dim1Text", 0.04, 0.47);
+                positionLine("dim2Text", 0.04, 0.65);
+                positionLine("dim3Text", 0.04, 0.83);
+
+                positionLine("tutorialText1", 0.03, 0.013);
+                positionLine("tutorialText2", 0.03, 0.28);
+                positionLine("tutorialText3", 0.03, 0.93);
+
+                moveToCoord(document.getElementById("referenceSliders").children[0], 0.65, 0.09); //reference color sliders
+                moveToCoord(document.getElementById("referenceSelect").children[0], 0.3, 0.171); //reference length selection
+                moveToCoord(document.getElementById("dim1Sliders").children[0], 0.65, 0.38); //dim 1 color sliders
+                moveToCoord(document.getElementById("dim1Select").children[0], 0.3, 0.461); //dim 1 unit selection
+                moveToCoord(document.getElementById("dim2Sliders").children[0], 0.65, 0.56); //dim 2 color sliders
+                moveToCoord(document.getElementById("dim2Select").children[0], 0.3, 0.641); //dim 2 unit selection
+                moveToCoord(document.getElementById("dim3Sliders").children[0], 0.65, 0.74); //dim 3 color sliders
+                moveToCoord(document.getElementById("dim3Select").children[0], 0.3, 0.821); //dim 3 unit selection
+                    break;
+                case "volume":
+                    //moveToCoord(document.getElementById("tutorialText4").children[0], 0, 0); //Tutorial text 4
+
+                    moveToCoord(document.getElementById("volumeSelect").children[0], 0.65, 0.2);
+                    moveToCoord(document.getElementById("densitySelect").children[0], 0.65, 0.35);
+                    moveToCoord(document.getElementById("massSelect").children[0], 0.65, 0.47);
+                    moveToCoord(document.getElementById("growthSelect1").children[0], 0.05, 0.60);
+                    moveToCoord(document.getElementById("growthSelect2").children[0], 0.65, 0.66);
+
+                    positionLine("tutorialText4", 0.03, 0.013);
+
+                    positionLine("volumeCalc", 0.0625, 0.1);
+                    positionLine("volumeText", 0.1, 0.22);
+                    positionLine("perTitty", 0.55, 0.27);
+                    positionLine("totalVolume", 0.05, 0.175);
+                    positionLine("totalDensity", 0.05, 0.325);
+                    positionLine("densityText", 0.1, 0.37);
+                    positionLine("totalMass", 0.05, 0.455);
+                    positionLine("massText", 0.1, 0.49);
+                    positionLine("perTitty2", 0.6, 0.57);
+                    positionLine("growthText1", 0.05, 0.75);
+                    positionLine("growthText2", 0.3, 0.78);
+                    positionLine("tutorialText5", 0.05, 0.85);
+
+                break;
+                case "clothing":
+                    positionLine("tutorialText6", 0.03, 0.014);
+                break;
+                case "milk":
+                    positionLine("tutorialText7", 0.03, 0.014);
+                break;
+                case "export":
+                    positionLine("supportMeDammit", 0, 1.02);
+                    for(let i = 0; i < customTexts; i++) {
+                        positionLine("newText" + i, 0.03, 0.4);
+                    }
+                break;
+            }
+        }
+
+        function updateLine(line) {
+            let group = line.group;
+            let delta = {
+                    x: line.x2 - line.x1,
+                    y: line.y2 - line.y1
+                }
+            let angle = Math.atan2(delta.y, delta.x);
+            line.length = Math.hypot(delta.x, delta.y);
+
+
+            if(line.type == "text") {
+                group.children[0].setAttribute('x', line.x1);
+                group.children[0].setAttribute('y', line.y1);
+                group.children[0].style.transform = ('rotate('+ angle * 180 / Math.PI + 'deg) scale(' + Math.hypot(delta.x, delta.y) / group.children[0].getAttribute('width') + ')')
+            }
+
+            if(line.type == "ruler") {
+                let p1 = group.children[0],
+                    p2 = group.children[1];
+
+                p1.setAttribute('x', line.x1 - 12.5);
+                p1.setAttribute('y', line.y1 - 12.5);
+                p2.setAttribute('x', line.x2 - 12.5);
+                p2.setAttribute('y', line.y2 - 12.5);
+
+                group.children[2].setAttribute('x1', line.x1);
+                group.children[2].setAttribute('x2', line.x2);
+                group.children[2].setAttribute('y1', line.y1);
+                group.children[2].setAttribute('y2', line.y2);
+
+                group.children[3].setAttribute('x1', line.x1 + line.flange * Math.sin(angle));
+                group.children[3].setAttribute('x2', line.x1 - line.flange * Math.sin(angle));
+                group.children[3].setAttribute('y1', line.y1 - line.flange * Math.cos(angle));
+                group.children[3].setAttribute('y2', line.y1 + line.flange * Math.cos(angle));
+
+                group.children[4].setAttribute('x1', line.x2 + line.flange * Math.sin(angle));
+                group.children[4].setAttribute('x2', line.x2 - line.flange * Math.sin(angle));
+                group.children[4].setAttribute('y1', line.y2 - line.flange * Math.cos(angle));
+                group.children[4].setAttribute('y2', line.y2 + line.flange * Math.cos(angle));
+
+                group.style.stroke = "rgb(" + line.red + " " + line.green + " " + line.blue +")";
+                rulers[line.text].red = line.red;
+                rulers[line.text].green = line.green;
+                rulers[line.text].blue = line.blue;
+                updateTexts();
+            }
+        }
+
+        
+
+        function updateTextBox(index, math = false) {
+            let box = rulers[index].group.children[0];
+            context.font = window.getComputedStyle(box.children[0]).font;
+            let lines = box.children[0].innerText.split('\n');
+            let greatestWidth = 0;
+            for(let line of lines) {
+                greatestWidth = Math.max(context.measureText(line).width, greatestWidth);
+            }
+            //dimensions = context.measureText(box.children[0].innerText);
+            let scale = (window.getComputedStyle(box).width.split("px")[0]) / greatestWidth;
+            if (math) {
+                return scale;
+            } else {
+                box.children[0].style.transform = "scale(" + scale + ")" 
+                box.children[0].style.color = "rgb(" + rulers[index].red + " " + rulers[index].green + " " + rulers[index].blue +")";
+            }
+        }
+
+        positionHandles("dimensions");
+        positionHandles("volume");
+        positionHandles("clothing");
+        positionHandles("milk");
+        positionHandles("export");
+
+        let currentlyGrabbed = undefined;
+        let grabbedNumber = 1;
+        let mousePos = {x: 0, y: 0};
+        let keys = {}
+
+        function updateTexts() {
+            let referenceNumber = document.getElementById("referenceSelect").children[0].children[0].value * 1
+            let referenceUnit = document.getElementById("referenceSelect").children[0].children[1].value;
+            document.getElementById("referenceText").children[0].children[0].innerText = isPlural(referenceNumber, referenceUnit);
+            updateTextBox("referenceText");
+
+            let referenceMeters = referenceNumber * units[referenceUnit];
+            for(let dim of ["dim1", "dim2", "dim3"]) {
+                //Put in an if statement to check the selected unit, just in case.
+                let text = "";
+                if(document.getElementById(dim + "Select").children[0].children[1].value == "auto") {
+                    text = getSensicalLengthUnit(referenceMeters * rulers[dim].length / rulers["reference"].length, referenceUnit);
+                } else {
+                    let dimUnit = document.getElementById(dim + "Select").children[0].children[1].value;
+                    text = isPlural(Math.round(referenceMeters * rulers[dim].length / rulers["reference"].length / units[dimUnit] * suffixes[dimUnit][2])/suffixes[dimUnit][2], dimUnit);
+                }
+                document.getElementById(dim + "Text").children[0].children[0].innerText = text;
+                updateTextBox(dim + "Text");
+            }
+            
+            let volumeMath = "(";
+            volumeMath += document.getElementById("dim1Text").children[0].children[0].innerText
+            let averageDiameter = referenceMeters * rulers["dim1"].length / rulers["reference"].length;
+            //let volumeMeters = referenceMeters * rulers["dim1"].length / rulers["reference"].length;
+            if(!document.getElementById("dim2Select").children[0].children[0].checked) {
+                volumeMath += " * " + document.getElementById("dim2Text").children[0].children[0].innerText;
+                //volumeMeters *= referenceMeters * rulers["dim2"].length / rulers["reference"].length;
+                averageDiameter += referenceMeters * rulers["dim2"].length / rulers["reference"].length;
+            }
+            if(!document.getElementById("dim3Select").children[0].children[0].checked) {
+                volumeMath += " * " + document.getElementById("dim3Text").children[0].children[0].innerText;
+                //volumeMeters *= referenceMeters * rulers["dim3"].length / rulers["reference"].length;
+                averageDiameter += referenceMeters * rulers["dim3"].length / rulers["reference"].length;
+            }
+            volumeMath += ")"
+            if(document.getElementById("dim2Select").children[0].children[0].checked || document.getElementById("dim3Select").children[0].children[0].checked) {
+                volumeMath += "^" + (document.getElementById("dim2Select").children[0].children[0].checked && document.getElementById("dim3Select").children[0].children[0].checked ? 3 : 1.5);
+                //volumeMeters = volumeMeters ** (document.getElementById("dim2Select").children[0].children[0].checked && document.getElementById("dim3Select").children[0].children[0].checked ? 3 : 1.5);
+            }
+            averageDiameter /= (3 - document.getElementById("dim2Select").children[0].children[0].checked - document.getElementById("dim3Select").children[0].children[0].checked);
+            //By this point, the text displayed is something like "(1.5cm * 5cm)^2", and the averageDiameter is correct.
+            volumeMath += " * &pi;/6"
+            let volumeMeters = averageDiameter ** 3 * Math.PI / 6;
+
+
+            document.getElementById("volumeCalc").children[0].children[0].innerHTML = volumeMath;
+            updateTextBox("volumeCalc");
+
+            let volumeString = "";
+            let volumeUnit = document.getElementById("volumeSelect").children[0].children[0].value;
+            if(volumeUnit == "auto") {
+                volumeString = getSensicalLengthUnit(volumeMeters, referenceUnit, true);
+            } else {
+                volumeString = isPlural((volumeMeters ** (1/3)) / units[volumeUnit], volumeUnit, true);
+            }
+
+            document.getElementById("volumeText").children[0].children[0].innerHTML = volumeString;
+            updateTextBox("volumeText");
+
+            let density = document.getElementById("densitySelect").children[0].children[0].value; //This is in g/cm^3
+            document.getElementById("densityText").children[0].children[0].innerText = density + " g/cm^3";
+            updateTextBox("densityText");
+
+            let massMeters = volumeMeters * density * 1000; //This is in kilograms / m^3
+            let massUnit = document.getElementById("massSelect").children[0].children[0].value;
+            let massText = ""
+            if(massUnit == "auto") {
+                massText = getSensicalMassUnit(massMeters, referenceUnit);
+            } else {
+                massText = isPlural(massMeters / units[massUnit], massUnit);
+            }
+            document.getElementById("massText").children[0].children[0].innerText = massText;
+            updateTextBox("massText");
+
+            let growthUnits1 = document.getElementById("growthSelect1").children[0].children[1].value //Length
+            let growthTime1 = document.getElementById("growthSelect1").children[0].children[2].value //Time
+            let growthMeters = document.getElementById("growthSelect1").children[0].children[0].value * units[growthUnits1]; //In meters of diameter per unit of time.
+            let growthUnits2 = document.getElementById("growthSelect2").children[0].children[0].value //Mass
+            let growthTime2 = document.getElementById("growthSelect2").children[0].children[1].value //Time
+            document.getElementById("growthText1").children[0].children[0].innerText = "If her breasts grew by " + isPlural(growthMeters / units[growthUnits1], growthUnits1) + " each " + suffixes[growthTime1] + "...";
+            updateTextBox("growthText1");
+            let growthDelta = growthMeters / units[growthTime1] * units[growthTime2] //The diametral difference over the next of output time.
+            let growthVolume = ((averageDiameter + growthDelta)**3 - (averageDiameter**3)) * Math.PI / 6; //The volume gained over the next unit of output time.
+            let growthMass = growthVolume * density * 1000;
+            let growthText = "...Each boob would get "
+            if(growthUnits2 == "auto") {
+                growthText += getSensicalMassUnit(growthMass, referenceUnit);
+            } else {
+                growthText += isPlural(growthMass / units[growthUnits2], growthUnits2);
+            }
+            growthText += " heavier every " + suffixes[growthTime2] + "."
+            document.getElementById("growthText2").children[0].children[0].innerText = growthText;
+            updateTextBox("growthText2");
+        }
+
+        document.getElementById("referenceSelect").children[0].children[0].addEventListener('input', updateTexts);
+        document.getElementById("referenceSelect").children[0].children[1].addEventListener('input', updateTexts);
+
+        document.getElementById("dim1Select").children[0].children[1].addEventListener('input', updateTexts);
+        document.getElementById("dim2Select").children[0].children[0].addEventListener('change', updateTexts);
+        document.getElementById("dim2Select").children[0].children[1].addEventListener('input', updateTexts);
+        document.getElementById("dim3Select").children[0].children[0].addEventListener('change', updateTexts);
+        document.getElementById("dim3Select").children[0].children[1].addEventListener('input', updateTexts);
+        document.getElementById("volumeSelect").children[0].children[0].addEventListener('input', updateTexts);
+        document.getElementById("densitySelect").children[0].children[0].addEventListener('input', updateTexts);
+        document.getElementById("massSelect").children[0].children[0].addEventListener('input', updateTexts);
+        document.getElementById("growthSelect1").children[0].children[0].addEventListener('input', updateTexts);
+        document.getElementById("growthSelect1").children[0].children[1].addEventListener('input', updateTexts);
+        document.getElementById("growthSelect1").children[0].children[2].addEventListener('input', updateTexts);
+        document.getElementById("growthSelect2").children[0].children[0].addEventListener('input', updateTexts);
+        document.getElementById("growthSelect2").children[0].children[1].addEventListener('input', updateTexts);
+
+        document.getElementById('newTextButton').addEventListener('click', newCustomText);
+        document.getElementById('updateTextButton').addEventListener('click', updateText);
+        document.getElementById('globalColorSelect').addEventListener('input', globalColor);
+        document.getElementById('screenshotButton').addEventListener('click', takeScreenshot);
+        document.getElementById('saveToClipboard').addEventListener('click', saveClipboard);
+        document.getElementById('saveToFile').addEventListener('click', saveFile);
+
+        function globalColor() {
+            let color = document.getElementById('globalColorSelect').value;
+            let presets = {
+                red: parseInt(color.substring(1, 3), 16),
+                green: parseInt(color.substring(3, 5), 16),
+                blue: parseInt(color.substring(5, 7), 16)
+            }
+            for(let group of document.getElementsByClassName('svgText')) {
+                if(!group.id.includes('newText')) {
+                    let id = group.id;
+                    rulers[id].red = presets.red;
+                    rulers[id].green = presets.green;
+                    rulers[id].blue = presets.blue;
+                    updateLine(rulers[id]);
+                    updateTextBox(id);
+                }
+            }
+        }
+
+        function newCustomText() {
+            let color = document.getElementById('customColorSelect').value
+            let presets = {
+                red: parseInt(color.substring(1, 3), 16),
+                green: parseInt(color.substring(3, 5), 16),
+                blue: parseInt(color.substring(5, 7), 16)
+            }
+            generateText("export", "newText" + customTexts, 300, document.getElementById('customTextBox').value.replaceAll('\n', '<br>'), presets);
+            positionLineStupid("newText" + customTexts, 0.03, 0.4);
+            //console.log(document.getElementById('customTextBox').value);
+            customTexts++
+        }
+
+        function connectSliders(line, sliderGroup) {
+            let sliders = sliderGroup.getElementsByClassName("slider");
+            sliders[0].addEventListener('input', (event) => {
+                line.red = event.target.value;
+                updateLine(line);
+            })
+            sliders[1].addEventListener('input', (event) => {
+                line.green = event.target.value;
+                updateLine(line);
+            })
+            sliders[2].addEventListener('input', (event) => {
+                line.blue = event.target.value;
+                updateLine(line);
+            })
+            sliders[3].addEventListener('input', (event) => {
+                line.flange = event.target.value;
+                updateLine(line);
+            })
+        }
+        
+        connectSliders(rulers.reference, document.getElementById('referenceSliders'));
+        connectSliders(rulers.dim1, document.getElementById('dim1Sliders'));
+        connectSliders(rulers.dim2, document.getElementById('dim2Sliders'));
+        connectSliders(rulers.dim3, document.getElementById('dim3Sliders'));
+        
+        for(let element of document.getElementsByClassName("nodeHandle")) {
+            element.addEventListener('mousedown', function(event) {
+                currentlyGrabbed = rulers[element.parentElement.dataset.target];
+                grabbedNode = element.dataset.number * 1;
+            })
+        }
+
+        /*for(let element of document.getElementsByClassName("textHandle")) {
+            element.addEventListener('mousedown', function(event) {
+                currentlyGrabbed = rulers[element.parentElement.dataset.target];
+                console.log(currentlyGrabbed);
+                grabbedNode = element.dataset.number * 1;
+            })
+        }*/
+
+        window.addEventListener('keydown', function(event) {
+            keys[event.code] = true;
+        });
+
+        window.addEventListener('keyup', function(event) {
+            keys[event.code] = false;
+        });
+
+        window.addEventListener('mouseup', function(event) {
+            currentlyGrabbed = undefined;
+        })
+
+        window.addEventListener('mousemove', function(event) {
+            let delta = {
+                x: mousePos.x - event.clientX,
+                y: mousePos.y - event.clientY
+            }
+            mousePos.x = event.clientX;
+            mousePos.y = event.clientY;
+            if(currentlyGrabbed != undefined) {
+                currentlyGrabbed["x" + grabbedNode] -= delta.x;
+                currentlyGrabbed["y" + grabbedNode] -= delta.y;
+                if(currentlyGrabbed.type == 'text' && grabbedNode == 1) {
+                    currentlyGrabbed["x" + (3 - grabbedNode)] -= delta.x;
+                    currentlyGrabbed["y" + (3 - grabbedNode)] -= delta.y;
+                } else if (keys.ShiftLeft || keys.ShiftRight) {
+                    let origin = {
+                        x: currentlyGrabbed["x" + (3 - grabbedNode)],
+                        y: currentlyGrabbed["y" + (3 - grabbedNode)]
+                    };
+                    let point = snapToAngle(origin, mousePos, 24);
+                    currentlyGrabbed["x" + grabbedNode] = point.x;
+                    currentlyGrabbed["y" + grabbedNode] = point.y;
+                }
+
+                //currentlyGrabbed.setAttribute("x", currentlyGrabbed.getAttribute('x') * 1 - delta.x);
+                //currentlyGrabbed.setAttribute("y", currentlyGrabbed.getAttribute('y') * 1 - delta.y);
+                updateLine(currentlyGrabbed);
+            }
+        })
+
+        function snapToAngle(origin, point, resolution) {
+            let magnitude = Math.hypot(point.y - origin.y, point.x - origin.x)
+            let angle = Math.atan2(point.y - origin.y, point.x - origin.x) / (2 * Math.PI);
+            angle = Math.round(angle * resolution)/resolution * 2 * Math.PI;
+            return {
+                x: origin.x + magnitude * Math.cos(angle),
+                y: origin.y + magnitude * Math.sin(angle)
+            }
+        }
+
+        function imageLoaded(src) {
+            document.getElementById("tittyImage").src = src;
+            document.getElementById("waitingForImage").style.display = "none";
+            document.getElementById("tittyImage").style.display = "block";
+            //takeScreenshot();
+        }
+
+        function checkIfImage(url) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.src = url;
+        
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+            });
+        }
+
+        function takeScreenshot() {
+            let canvas;
+            //if(document.getElementById('screenshotOutput') != undefined) {
+                canvas = document.getElementById('screenshotOutput') 
+            //} else {
+            //    canvas = document.createElement('canvas');
+            //    canvas.id = 'screenshotOutput';
+            //}
+            let ctx = canvas.getContext("2d");
+            let img = document.getElementById('tittyImage')
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            ctx.drawImage(img, 0, 0);
+            //document.getElementById("sidePanel").append(canvas);
+            let imageBox = document.getElementById("tittyImage").getBoundingClientRect();
+
+            function stampElement(id) {
+                let data = rulers[id];
+                let element = document.getElementById(id);
+                let newPosition = {
+                    x1: (data.x1 - imageBox.x) * canvas.width / imageBox.width,
+                    y1: (data.y1 - imageBox.y) * canvas.height / imageBox.height,
+                    x2: (data.x2 - imageBox.x) * canvas.width / imageBox.width,
+                    y2: (data.y2 - imageBox.y) * canvas.height / imageBox.height
+                }
+                let delta = {
+                    x: newPosition.x2 - newPosition.x1,
+                    y: newPosition.y2 - newPosition.y1
+                }
+                let angle = Math.atan2(delta.y, delta.x);
+                let canvasScale = canvas.width / imageBox.width;
+                ctx.fillStyle = 'rgb(' + data.red + ',' + data.green + ',' + data.blue +")";
+                ctx.strokeStyle = 'rgb(' + data.red + ',' + data.green + ',' + data.blue +")";
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                if (data.type == "text") {
+                    ctx.translate(newPosition.x1, newPosition.y1);
+                    ctx.rotate(Math.atan2(newPosition.y2 - newPosition.y1, newPosition.x2 - newPosition.x1));
+                    let scalingFactor =  Math.hypot(delta.x, delta.y) / element.children[0].getAttribute('width') * updateTextBox(id, true)
+                    ctx.scale(scalingFactor, scalingFactor)
+                    ctx.translate(0, 14) //This lowers the rendered text so that it aligns with the stamp element. It was originally 2, but for some reason it has increased to 14.
+                    ctx.font = window.getComputedStyle(element.children[0].children[0]).font;
+                    let textContent = element.children[0].children[0].innerText.split('\n');
+                    //ctx.fillText(element.children[0].children[0].innerText, 0, 0, Math.hypot(delta.x, delta.y)); 
+                    for(let textLine of textContent) {
+                        ctx.fillText(textLine, 0, 0, Math.hypot(delta.x, delta.y));
+                        ctx.translate(0, window.getComputedStyle(element.children[0].children[0]).lineHeight.split("px")[0]);
+                    }
+                    
+                } else if (data.type == "ruler") {
+                    ctx.lineWidth = data.thickness * canvasScale;
+                    ctx.beginPath();
+                    ctx.moveTo(newPosition.x1, newPosition.y1);
+                    ctx.lineTo(newPosition.x2, newPosition.y2);
+                    ctx.moveTo(newPosition.x1 + data.flange * canvasScale * Math.sin(angle), newPosition.y1 - data.flange * canvasScale * Math.cos(angle));
+                    ctx.lineTo(newPosition.x1 - data.flange * canvasScale * Math.sin(angle), newPosition.y1 + data.flange * canvasScale * Math.cos(angle));
+                    ctx.moveTo(newPosition.x2 + data.flange * canvasScale * Math.sin(angle), newPosition.y2 - data.flange * canvasScale * Math.cos(angle));
+                    ctx.lineTo(newPosition.x2 - data.flange * canvasScale * Math.sin(angle), newPosition.y2 + data.flange * canvasScale * Math.cos(angle));
+                    ctx.stroke();
+                }
+            }
+            //let textList = document.getElementsByClassName('svgText');
+            
+            for(let id in rulers) {
+                stampElement(id);
+            }
+        }
+
+
+        async function saveClipboard() {
+            let canvas = document.getElementById('screenshotOutput');
+            if(canvas.width == 0) {
+                return;
+            }
+            canvas.toBlob(async (blob) => {
+                try {
+                    const item = new ClipboardItem({ [blob.type]: blob });
+                    await navigator.clipboard.write([item]);
+                } catch (error) {
+                    console.log(error);
+                }
+            }, "image/png");
+        }
+
+        function saveFile() {
+            let downloadLink = document.createElement('a');
+            downloadLink.setAttribute('download', 'tittyScaling.png');
+            let canvas = document.getElementById('screenshotOutput');
+            canvas.toBlob(blob => {
+                let url = URL.createObjectURL(blob);
+                downloadLink.setAttribute('href', url);
+                downloadLink.click();
+            });
+        }
+        
+
+        function isPlural(number, unit, volume = false) {
+            //Takes the singular and plural options as strings to be appended to the number.
+            if(number == 1 && volume == false) {
+                return (Math.round(number * suffixes[unit][2])/suffixes[unit][2]).toLocaleString() + suffixes[unit][0];
+            } else if(volume == false) {
+                return (Math.round(number * suffixes[unit][2])/suffixes[unit][2]).toLocaleString() + suffixes[unit][1];
+            } else if(number == 1) {
+                return (Math.round((number) ** 3 * suffixes[unit][2])/suffixes[unit][2]).toLocaleString() + suffixes[unit][3];
+            } else {
+                return (Math.round((number) ** 3 * suffixes[unit][2])/suffixes[unit][2]).toLocaleString() + suffixes[unit][4];
+            }
+        }
+
+        function getSensicalLengthUnit(number, referenceUnit, volume = false) {
+            //Finds an appropriate unit for a value of length. Maintains metric/imperial separation for as long as reasonable.
+            //The number is always given in meters and converted in post.
+            if(volume) {
+                number = number ** (1/3);
+            }
+            let selectedUnit = "";
+            if(referenceUnit == "in" || referenceUnit == "ft" || referenceUnit == "mi") {
+                //The unit is imperial, and tries to remain as such.
+                if(number / units.ft < 1) {
+                    selectedUnit = "in";
+                } else if (number / units.mi < 1) {
+                    selectedUnit = "ft";
+                } else if (number / units.EL < 0.5) {
+                    selectedUnit = "mi";
+                }
+            } else {
+                if(number / units.cm < 1) {
+                    selectedUnit = "mm";
+                } else if ((number / units.m < 1 && !volume) || (number / units.L < 1 && volume)) {
+                    selectedUnit = "cm";
+                } else if (number / units.m < 1 && volume) {
+                    selectedUnit = "L";
+                } else if (number / units.km < 1) {
+                    selectedUnit = "m";
+                } else if (number / units.EL < 0.5) {
+                    selectedUnit = "km";
+                }
+            }
+            if(number / units.EL >= 0.5) {
+                if(number / units.AU < 1) {
+                    selectedUnit = "EL";
+                } else if(number / units.LY < 1) {
+                    selectedUnit = "AU";
+                } else if(number / units.U < 0.1) {
+                    selectedUnit = "LY";
+                } else {
+                    selectedUnit = "U";
+                }
+            }
+
+
+            return isPlural((number / units[selectedUnit]), selectedUnit, volume);
+        }
+
+        function getSensicalMassUnit(number, referenceUnit) {
+            let selectedUnit = "kg";
+             if(referenceUnit == "in" || referenceUnit == "ft" || referenceUnit == "mi") {
+                //The unit is imperial, and tries to remain as such.
+                if(number / units.lb < 1) {
+                    selectedUnit = "oz";
+                } else if (number / units.ton < 1) {
+                    selectedUnit = "lb";
+                }
+            } else {
+                if(number / units.kg < 1) {
+                    selectedUnit = "g";
+                } else if (number / units.ton < 1) {
+                    selectedUnit = "kg";
+                }
+            }
+            if(number / units.ton >= 1) {
+                if(number / units.kt < 1) {
+                    selectedUnit = "ton";
+                } else if (number / units.mt < 1) {
+                    selectedUnit = "kt";
+                } else if (number / units.tt < 1) {
+                    selectedUnit = "mt";
+                } else if (number / units.EM < 0.1) {
+                    selectedUnit = "tt";
+                } else if (number / units.SM < 0.1) {
+                    selectedUnit = "EM";
+                } else if (number / units.GM < 0.1) {
+                    selectedUnit = "SM";
+                } else if (number / units.UM < 0.1) {
+                    selectedUnit = "GM";
+                } else {
+                    selectedUnit = "UM";
+                }
+            }
+
+            return isPlural((number / units[selectedUnit]), selectedUnit);
+        }
+
+        document.getElementById("urlInput").addEventListener('change', function(event) {
+            const url = document.getElementById("urlInput").value;
+            if(checkIfImage(url)) {
+                imageLoaded(url);
+            }
+        });
+
+        document.getElementById("fileInput").addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                imageLoaded(URL.createObjectURL(file)); 
+            }
+        });
+
+        window.addEventListener('paste', function(event) {
+            const content = event.clipboardData.items
+            for (let i = 0; i < content.length; i++) {
+                if (content[i].type.indexOf('image') !== -1) {
+                    const blob = content[i].getAsFile();
+                    imageLoaded(URL.createObjectURL(blob));
+                    break;
+                }
+
+            }
+        })
+
+        //The logo can be a fist holding a caliper/wrench that's measuring the nipple of boobs above
+        //"This measurement was performed by REAL titty engineers"
+        //Scale something. TittyScale? Tittyscaling?
+
+
+
+    </script>
+</body>
+</html>
