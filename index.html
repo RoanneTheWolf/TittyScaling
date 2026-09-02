@@ -1,16 +1,20 @@
 <html>
 <body>
     <style>
+        html { 
+            overflow: hidden;
+        }
         body {
             background-color: #555555;
             padding: 0px;
             margin: 0px;
-            display: flex;
             color: white;
             user-select: none;
             position: relative;
             font-family: Arial, Helvetica, sans-serif;
             line-height: 1.2;
+            overflow: hidden;
+            box-sizing: border-box;
         }
         .overlay {
             width: 100%;
@@ -19,13 +23,14 @@
             pointer-events: none;
             top: 0px;
             left: 0px;
+            transform-origin: top left;
         }
         #sidePanel {
             background-color: #555555;
             border: 2px solid white;
             width: 400px;
             height: 600px;
-            min-height: 600px;
+            max-height: 600px;
             margin-top: 20px;
             position: relative;
             flex-grow: 1;
@@ -130,12 +135,12 @@
 
         .textHandle {
             position: absolute;
-            top: -5px;
+            top: -10px;
             border: 2px solid white;
             background: #222222;
             opacity: 0;
-            height: 10px;
-            width: 10px;
+            height: 20px;
+            width: 20px;
             cursor: pointer;
             box-sizing: border-box;
         }
@@ -194,6 +199,7 @@
 
 
     </style>
+    <div id="standardElements" style="width: 100%; height: 100%; position: relative; display: flex; transform-origin: top left;">
     <div class="imageContainer">
         <div id="waitingForImage">
             To get started, paste an image URL here: <input type="url" id="urlInput" />
@@ -233,6 +239,7 @@
             </div>
         </div>
     </div>
+    
     <svg id='dimensionsOverlay' class="overlay" style="stroke: #ffffff">
         
         <g id="referenceDim" class="dimension" style="stroke: #ffffff;" data-target="reference">
@@ -504,6 +511,7 @@
     <svg id='exportOverlay' class="overlay" style="stroke: #ffffff">
 
     </svg>
+    </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.js"></script>
     <script>
@@ -647,6 +655,7 @@
         const canvas = document.createElement("canvas");
         const context = canvas.getContext('2d');
         var customTexts = 0;
+        var screenFactor = 1;
 
         const rgbToHex = (r, g, b) => {
             const toHex = (value) => value.toString(16).padStart(2, '0');
@@ -673,6 +682,7 @@
         switchTabs('dimensions');
 
         function generateText(tab, id, width, text, presets = {red: 255, green: 255, blue: 255}) {
+            //width *= screenFactor;
             let svg = document.getElementById(tab + "Overlay");
 
             let group = document.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -695,15 +705,35 @@
 
 
             leftHandle.addEventListener('mousedown', function(event) {
+                mousePos.x = event.clientX;
+                mousePos.y = event.clientY;
                 currentlyGrabbed = rulers[id];
                 grabbedNode = 1;
             })
+            leftHandle.addEventListener('touchstart', function(event) {
+                let touch = event.targetTouches[0];
+                mousePos.x = touch.clientX;
+                mousePos.y = touch.clientY;
+                currentlyGrabbed = rulers[id];
+                grabbedNode = 1;
+            })
+
             rightHandle.addEventListener('mousedown', function(event) {
+                mousePos.x = event.clientX;
+                mousePos.y = event.clientY;
+                currentlyGrabbed = rulers[id];
+                grabbedNode = 2;
+            })
+            rightHandle.addEventListener('touchstart', function(event) {
+                let touch = event.targetTouches[0];
+                mousePos.x = touch.clientX;
+                mousePos.y = touch.clientY;
                 currentlyGrabbed = rulers[id];
                 grabbedNode = 2;
             })
             group.setAttribute('onclick', 'selectText(this)')
         
+
 
             foreignObject.appendChild(textElement);
             foreignObject.appendChild(leftHandle);
@@ -730,7 +760,9 @@
             }
             if(element.classList.contains('selectedText') || !element.id.includes("newText")) {
                 element.classList.remove('selectedText');
-                document.getElementById('lowerLine').remove();
+                try {
+                    document.getElementById('lowerLine').remove();
+                } catch {}
             } else {
                 element.classList.add('selectedText');
 
@@ -805,7 +837,7 @@
         function positionLineStupid(line, x1, y1) {
             let box = document.getElementById("sidePanel").getBoundingClientRect();
             [rulers[line].x1, rulers[line].y1] = [box.x + box.width*x1, box.y + box.height*y1];
-            rulers[line].x2 = rulers[line].x1 + rulers[line].group.children[0].width.baseVal.value;
+            rulers[line].x2 = rulers[line].x1 + rulers[line].group.children[0].width.baseVal.value / screenFactor;
             rulers[line].y2 = rulers[line].y1;
             updateLine(rulers[line]);
         }
@@ -820,6 +852,7 @@
             function moveToCoord(element, x, y) {
                 element.setAttribute('x', box.x + box.width * x);
                 element.setAttribute('y', box.y + box.height * y);
+                element.style.transform = "scale(" + screenFactor + ")";
             }
 
             function getCoord(x, y) {
@@ -830,7 +863,7 @@
                 [rulers[line].x1, rulers[line].y1] = getCoord(x1, y1);
                 rulers[line].y2 = rulers[line].y1; 
                 if(rulers[line].type == "text") {
-                    rulers[line].x2 = rulers[line].x1 + rulers[line].group.children[0].width.baseVal.value;
+                    rulers[line].x2 = rulers[line].x1 + rulers[line].group.children[0].width.baseVal.value * screenFactor;
                 } else {
                     rulers[line].x2 = getCoord(x2, y1)[0];
                 }
@@ -905,12 +938,30 @@
                     positionLine("tutorialText7", 0.03, 0.014);
                 break;
                 case "export":
-                    positionLine("supportMeDammit", 0, 1.02);
+                    positionLine("supportMeDammit", 0, 1.01);
                     for(let i = 0; i < customTexts; i++) {
                         positionLine("newText" + i, 0.03, 0.4);
                     }
                 break;
             }
+        }
+
+        function positionScreen() {
+            //Shrinks all of the displayed elements if the sidebar can't fit vertically (which requires a height of 700px.)
+            let box = document.getElementById("standardElements").getBoundingClientRect();
+            if(box.height < 700) {
+                screenFactor = box.height / 700;
+                document.getElementById("standardElements").style.transform = "scale(" + screenFactor + ")";
+                document.getElementById("standardElements").style.width = 100 / screenFactor + "%";
+                document.getElementById("standardElements").style.height = 100 / screenFactor + "%";
+                for(let element of document.getElementsByClassName("overlay")) {
+                    element.style.transform = "scale(" + screenFactor + ")";
+                    element.style.width = 100 / screenFactor + "%";
+                    element.style.height = 100 / screenFactor + "%";
+                }
+
+            }
+
         }
 
         function updateLine(line) {
@@ -980,6 +1031,7 @@
                 box.children[0].style.color = "rgb(" + rulers[index].red + " " + rulers[index].green + " " + rulers[index].blue +")";
             }
         }
+        positionScreen();
 
         positionHandles("dimensions");
         positionHandles("volume");
@@ -1119,7 +1171,7 @@
                 blue: parseInt(color.substring(5, 7), 16)
             }
             for(let group of document.getElementsByClassName('svgText')) {
-                if(!group.id.includes('newText')) {
+                if(!group.id.includes('newText') && !group.id.includes('dim')) {
                     let id = group.id;
                     rulers[id].red = presets.red;
                     rulers[id].green = presets.green;
@@ -1170,6 +1222,15 @@
         
         for(let element of document.getElementsByClassName("nodeHandle")) {
             element.addEventListener('mousedown', function(event) {
+                mousePos.x = event.clientX;
+                mousePos.y = event.clientY;
+                currentlyGrabbed = rulers[element.parentElement.dataset.target];
+                grabbedNode = element.dataset.number * 1;
+            })
+            element.addEventListener('touchstart', function(event) {
+                let touch = event.targetTouches[0];
+                mousePos.x = touch.clientX;
+                mousePos.y = touch.clientY;
                 currentlyGrabbed = rulers[element.parentElement.dataset.target];
                 grabbedNode = element.dataset.number * 1;
             })
@@ -1195,6 +1256,10 @@
             currentlyGrabbed = undefined;
         })
 
+        window.addEventListener('touchend', function(event) {
+            currentlyGrabbed = undefined;
+        })
+
         window.addEventListener('mousemove', function(event) {
             let delta = {
                 x: mousePos.x - event.clientX,
@@ -1202,6 +1267,21 @@
             }
             mousePos.x = event.clientX;
             mousePos.y = event.clientY;
+            moveHandle(delta);
+        })
+
+        window.addEventListener('touchmove', function(event) {
+            let touch = event.targetTouches[0];
+            let delta = {
+                x: mousePos.x - touch.clientX,
+                y: mousePos.y - touch.clientY
+            }
+            mousePos.x = touch.clientX;
+            mousePos.y = touch.clientY;
+            moveHandle(delta);
+        })
+
+        function moveHandle(delta) {
             if(currentlyGrabbed != undefined) {
                 currentlyGrabbed["x" + grabbedNode] -= delta.x;
                 currentlyGrabbed["y" + grabbedNode] -= delta.y;
@@ -1222,7 +1302,7 @@
                 //currentlyGrabbed.setAttribute("y", currentlyGrabbed.getAttribute('y') * 1 - delta.y);
                 updateLine(currentlyGrabbed);
             }
-        })
+        }
 
         function snapToAngle(origin, point, resolution) {
             let magnitude = Math.hypot(point.y - origin.y, point.x - origin.x)
