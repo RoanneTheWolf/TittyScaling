@@ -31,13 +31,14 @@
             width: 400px;
             height: 600px;
             max-height: 600px;
-            margin-top: 20px;
+            margin-top: 10px;
             position: relative;
             flex-grow: 1;
         }
-        #sideTabTray {
+        .sideTabTray {
             display: flex;
             justify-content: space-between;
+            margin-top: 10px;
         }
         .sideTab {
             font-size: 16px;
@@ -51,6 +52,7 @@
         #sideTray {
             width: 400px;
             margin: 40px;
+            margin-top: 10px;
             margin-left: 0px;
             display: flex;
             flex-direction: column;
@@ -185,13 +187,21 @@
             top: 0px;
             left: 0px;
         }
+        #customizeSettings {
+            width: 90%;
+            height: 100%;
+            position: relative;
+            top: 0px;
+            left: 0px;
+        }
         #lowerLine {
             border: 2px solid white;
             border-bottom: none;
             width: 100%;
-            height: 5px;
+            height: 100%;
             position: absolute;
             top: 0px;
+            left: 0px;
             z-index: -1;
             box-sizing: border-box;
         }
@@ -212,30 +222,84 @@
         <img id="tittyImage"/>
     </div>
     <div id="sideTray">
-        <div id="sideTabTray">
+        <div class="sideTabTray">
             <div class="sideTab" onclick="switchTabs('dimensions')">Dimensions</div>
             <div class="sideTab" onclick="switchTabs('volume')">Volume</div>
             <div class="sideTab" onclick="switchTabs('clothing')">Clothing</div>
             <div class="sideTab" onclick="switchTabs('milk')">Milk</div>
+        </div>
+        <div class="sideTabTray">
+            <div class="sideTab" onclick="switchTabs('customize')">Customize</div>
+            <div class="sideTab" onclick="switchTabs('me')">Me :)</div>
             <div class="sideTab" onclick="switchTabs('export')">Export</div>
         </div>
         <div id="sidePanel">
             <div class="resetButton" onclick="resetSVG()">&#x21bb;</div>
             <div id="exportSettings">
                 <div style='padding: 10px;'>
-                    If you want to add your own custom text,
-                    <br>you can do it here. <span style="font-size: 8px">Yes it looks bad, I'm not great at this.</span>
-                    <br><textArea id="customTextBox" style="max-width: 380px; max-height: 100px;"></textArea>
-                    <br><button id="newTextButton">Create</button> <button id="updateTextButton">Update</button> <input id='customColorSelect'type="color" value="#ffffff"/>
-                    <br>Change the color of all the other text with this: <input id='globalColorSelect' type="color" value="#ffffff"/>
-                    <br>
-                    <br>Satisfied with your beautiful creation? <button id="screenshotButton">Export!</button>
+                    Satisfied with your beautiful creation? 
+                    <br><button id="screenshotButton">Export!</button>
                 </div>
                 <canvas id="screenshotOutput"></canvas>
                 <div style="display: flex; justify-content:space-around">
                     <button id="saveToClipboard">Save To Clipboard</button>
                     <button id="saveToFile">Save To File</button>
                 </div>
+            </div>
+            <div id="customizeSettings">
+                <div style='padding: 10px;'>
+                    Add custom text:
+                    <br><textArea id="customTextBox" style="width: 380px; max-width: 380px; max-height: 100px;"></textArea>
+                    <br><button id="newTextButton">Create</button> <input id='customColorSelect'type="color" value="#ffffff"/>
+                    <br>
+                    <br>Modify the selected text:
+                    <br><textArea id="updateTextBox" style="width: 380px; max-width: 380px; max-height: 100px;"></textArea>
+                    <br><button id="updateTextButton">Update</button> <input id='updateColorSelect'type="color" value="#ffffff"/>
+                    <br><span style="font-size: 8px;">Note that the text of some calculations may revert if you change any settings or move the rulers.</span>
+                    <br>
+                    <br>Change the color of all the other text with this: <input id='globalColorSelect' type="color" value="#ffffff"/> <span style="font-size: 8px;">Any text you've manually changed stays the same.</span>
+                    <br>
+                    <br>Calculated volume/mass is...
+                    <br><input type="radio" id="perTittyTrue" value="true" name="perTittySelect" checked title="The numbers displayed represents the size of each breast"> <label for="perTittyTrue" title="The numbers displayed represents the size of each breast">Per titty</label>
+                    <br><input type="radio" id="perTittyFalse" value="false" name="perTittySelect" title="The numbers displayed represents the combined size of both breasts"> <label for="perTittyFalse" title="The numbers displayed represents the combined size of both breasts">The whole bust</label>
+                    <br><input type="radio" id="perTittyCustom" value="custom" name="perTittySelect" title="The numbers displayed represents this many boobs"> <label for="perTittyCustom" title="The numbers displayed represents this many boobs">This many boobs: <input type="number" id="perTittyCustomNumber" value="4" style="width: 100px;"></input></label>
+                    <br>Note that you should still only be measuring one boob at a time!
+                    <br>
+                    <br><input type="checkbox" id="pauseUpdates" title="When this is enabled, any auto-generated text will stop updating even if you move the rulers around or change settings."> <label for="pauseUpdates" title="When this is enabled, any auto-generated text will stop updating even if you move the rulers around or change settings.">Pause text updates</label>
+                </div>
+                
+            </div>
+            <div id="meSettings">
+                <div style='padding: 10px;'>
+                    Hello! It is me.
+                    <br>
+                    <br>I'm RoanneTheWolf, a self-proclaimed 
+                    <br><strong style="font-size: 32px;">&#10023; &#10023; Titty Engineer &#10023; &#10023;</strong>
+                    <br>I am also, as you can imagine, a massive nerd.
+                    <br>
+                    <br>I make stories, games, and very rarely, art.
+                    <br>Most of which is about foxes with massive tits.
+                    <br>
+                    <br>My other creations can be found on: 
+                    <br>- <a href="https://bsky.app/profile/roannethewolf.bsky.social" target="_blank" style="color: lightSkyBlue">Bluesky</a> 
+                    <br>- <a href="https://www.furaffinity.net/user/roannethewolf/" target="_blank" style="color: lightSkyBlue">FurAffinity</a>
+                    <br>- <a href="https://roannethewolf.itch.io/" target="_blank" style="color: lightSkyBlue">Itch.io</a>
+                    <br>- Lmao I'm not going to twitter.
+                    <br>
+                    <br>If you wanted to credit me, which would be very cool and based of you, here's a few stickers.
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>The greatest tribute I could possibly receive, of course, would be making the boobs bigger.
+                </div>
+                
             </div>
         </div>
     </div>
@@ -506,6 +570,85 @@
 
     </svg>
     <svg id='milkOverlay' class="overlay" style="stroke: #ffffff">
+        <g id="productivitySelect" class="immovable">
+            <foreignObject x="0" y="0" width="130" height="50" style="border: 2px solid white; padding: 5px; font-size: 14px; line-height: 14px;">
+                Productivity: <input type="number" value="1" style="margin-top: 3px; width: 103%; margin-right: -11px;"  title="Personally, excessive productivity isn't my thing. Just make the boobs bigger smh."></input>x
+            </foreignObject>
+        </g>
+        <g id="milkSelect" class="immovable">
+            <foreignObject x="0" y="0" width="130" height="63" style="border: 2px solid white; padding: 5px; font-size: 14px;">
+                <select class="unitSelect">
+                    <option value="auto" selected>auto</option>
+                    <option value="mm">millimeters</option>
+                    <option value="cm">centimeters</option>
+                    <option value="in">inches</option>
+                    <option value="L">liters</option>
+                    <option value="G">gallons</option>
+                    <option value="ft">feet</option>
+                    <option value="m">meters</option>
+                    <option value="km">kilometers</option>
+                    <option value="mi">miles</option>
+                    <option value="EL">earths</option>
+                    <option value="AU">astronomical units</option>
+                    <option value="LY">light-years</option>
+                    <option value="U">universes</option>
+                </select>
+                per
+                <select class="unitSelect">
+                    <option value="ms">millisecond</option>
+                    <option value="sec">second</option>
+                    <option value="min">minute</option>
+                    <option value="hour" selected>hour</option>
+                    <option value="day">day</option>
+                    <option value="week">week</option>
+                    <option value="month">month</option>
+                    <option value="year">year</option>
+                </select>
+            </foreignObject>
+        </g>
+
+        <g id="currencySelect" class="immovable">
+            <foreignObject x="0" y="0" width="130" height="63" style="border: 2px solid white; padding: 5px; font-size: 14px;">
+                <select class="unitSelect">
+                    <option value="USD" selected>US Dollars</option>
+                    <option value="euro">Euros</option>
+                    <option value="AUD">Australian Dollars</option>
+                    <option value="CAD">Canadian Dollars</option>
+                    <option value="peso">Pesos</option>
+                    <option value="yen">Yen</option>
+                    <option value="yuan">Yuan</option>
+                </select>
+                per
+                <select class="unitSelect">
+                    <option value="ms">millisecond</option>
+                    <option value="sec">second</option>
+                    <option value="min">minute</option>
+                    <option value="hour">hour</option>
+                    <option value="day" selected>day</option>
+                    <option value="week">week</option>
+                    <option value="month">month</option>
+                    <option value="year">year</option>
+                </select>
+            </foreignObject>
+        </g>
+        <g id="feedSelect" class="immovable">
+            <foreignObject x="0" y="0" width="130" height="30" style="border: 2px solid white; padding: 5px; font-size: 14px;">
+                <select class="unitSelect">
+                    <option value="baby" selected>babies</option>
+                    <option value="adult">adults</option>
+                    <option value="village">villages</option>
+                    <option value="town">towns</option>
+                    <option value="city">major cities</option>
+                    <option value="country">countries</option>
+                    <option value="planet">planets</option>
+                </select>
+            </foreignObject>
+        </g>
+    </svg>
+    <svg id='customizeOverlay' class="overlay" style="stroke: #ffffff">
+
+    </svg>
+    <svg id='meOverlay' class="overlay" style="stroke: #ffffff">
 
     </svg>
     <svg id='exportOverlay' class="overlay" style="stroke: #ffffff">
@@ -523,6 +666,7 @@
                 x2: 0,
                 y2: 0,
                 length: 0,
+                color: "#ffffff",
                 red: 255,
                 green: 255,
                 blue: 255,
@@ -538,6 +682,7 @@
                 x2: 0,
                 y2: 0,
                 length: 0,
+                color: "#ff7f7f",
                 red: 255,
                 green: 127,
                 blue: 127,
@@ -553,6 +698,7 @@
                 x2: 0,
                 y2: 0,
                 length: 0,
+                color: "#7fff7f",
                 red: 127,
                 green: 255,
                 blue: 127,
@@ -568,6 +714,7 @@
                 x2: 0,
                 y2: 0,
                 length: 0,
+                color: "#7f7fff",
                 red: 127,
                 green: 127,
                 blue: 255,
@@ -583,7 +730,7 @@
             mm: 0.001,
             cm: 0.01,
             in: 0.0254,
-            L: 0.1,
+            L: 0.1, //Volumetric units are expressed as their cube roots here.
             G: 0.1558,
             ft: 0.3048,
             m: 1,
@@ -612,7 +759,22 @@
             day: 86400,
             week: 604800,
             month: 1626000,
-            year: 31450000
+            year: 31450000,
+            USD: 427.96, //Money is expressed as how much of it you'll get per cubic meter of milk.
+            euro: 446.96,
+            yen: 122812,
+            yuan: 2961,
+            AUD: 2470,
+            CAD: 1750,
+            peso: 29790,
+            cal: 676281, //The number of kcalories per cubic meter of milk.
+            baby: 400/676281/86400, //The flow rate of milk required, in cubic meters per second.
+            adult: 2400/676281/86400,
+            village: 1500 * 2400/676281/86400,
+            town: 10000 * 2400/676281/86400,
+            city: 1000000 * 2400/676281/86400,
+            country: 40000000 * 2400/676281/86400,
+            planet: 8300000000 * 2400/676281/86400,
         }
 
         const suffixes = {
@@ -648,7 +810,21 @@
             day: "day",
             week: "week",
             month: "month",
-            year: "year"
+            year: "year",
+            USD: ["$", 100],
+            euro: ["\u20ac", 100],
+            yen: ["\u00A5", 1],
+            yuan: ["\u00A5", 1],
+            AUD: ["AU$", 100],
+            CAD: ["CA$", 100],
+            peso: ["\u20B1", 1],
+            baby: [" baby", " babies", 10],
+            adult: [" adult", " adults", 10],
+            village: [" village", " villages", 10],
+            town: [" town", " towns", 10],
+            city: [" major city", " major cities", 10],
+            country: [" country", " countries", 10],
+            planet: [" planet", " planets", 10],
         }
 
         var currentTab = "dimensions"
@@ -656,11 +832,20 @@
         const context = canvas.getContext('2d');
         var customTexts = 0;
         var screenFactor = 1;
+        var defaultColor = "#ffffff";
 
-        const rgbToHex = (r, g, b) => {
+        /*const rgbToHex = (r, g, b) => {
             const toHex = (value) => value.toString(16).padStart(2, '0');
             return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-        };
+        };*/
+
+        function rgbToHex(r, g, b) {
+            let output = "#"
+            for (let num of [r, g, b]) {
+                output += Math.floor(num).toString(16).padStart(2, '0');
+            }
+            return output;
+        }
 
         function switchTabs(tab) {
             for(let element of document.getElementsByClassName("overlay")) {
@@ -673,15 +858,25 @@
             currentTab = tab;
             if(currentTab == "export") {
                 document.getElementById("exportSettings").style.display = 'block';
-                //takeScreenshot();
             } else {
                 document.getElementById("exportSettings").style.display = 'none';
+            }
+            if(currentTab == "customize") {
+                document.getElementById("customizeSettings").style.display = 'block';
+            } else {
+                document.getElementById("customizeSettings").style.display = 'none';
+                unselectText();
+            }
+            if(currentTab == "me") {
+                document.getElementById("meSettings").style.display = 'block';
+            } else {
+                document.getElementById("meSettings").style.display = 'none';
             }
         }
 
         switchTabs('dimensions');
 
-        function generateText(tab, id, width, text, presets = {red: 255, green: 255, blue: 255}) {
+        function generateText(tab, id, width, text, color = undefined) {
             //width *= screenFactor;
             let svg = document.getElementById(tab + "Overlay");
 
@@ -745,40 +940,40 @@
                 y1: 0,
                 x2: 0,
                 y2: 0,
-                red: presets.red,
-                green: presets.green,
-                blue: presets.blue,
+                color: color,
                 type: "text",
                 group: group
             }
             updateTextBox(id);
         }
 
-        function selectText(element) {
-            while(document.getElementsByClassName('selectedText')[0] != undefined && document.getElementsByClassName('selectedText')[0] != element) {
+        function unselectText() {
+            while(document.getElementsByClassName('selectedText')[0] != undefined) { //Unselect any currently-selected text.
                 document.getElementsByClassName('selectedText')[0].classList.remove('selectedText');
-            }
-            if(element.classList.contains('selectedText') || !element.id.includes("newText")) {
-                element.classList.remove('selectedText');
                 try {
                     document.getElementById('lowerLine').remove();
                 } catch {}
-            } else {
-                element.classList.add('selectedText');
+            }
+            document.getElementById('updateTextBox').value = "";
+        }
 
-            if(document.getElementById('lowerLine') == undefined) {
-                let line = document.createElement('div');
-                line.id = 'lowerLine';
-                element.children[0].appendChild(line);
-            }
-            element.children[0].appendChild(document.getElementById('lowerLine'));
-            //document.getElementById('customTextBox').value = element.children[0].children[0].innerText;
+        function selectText(element) {
+            console.log(rulers[element.children[0].dataset.target]);
+            console.log(defaultColor);
+            unselectText();
             let id = element.children[0].dataset.target;
-            //document.getElementById('customColorSelect').value = rgbToHex(rulers[id].red,rulers[id].green,rulers[id].blue);
-            //updateTextBox(id);
-            //updateLine(id);
-            //Trying to make it match the selected element's text just means that it annoyingly erases all progress with a misclick.
+            if(currentTab == "customize") {
+                element.classList.add('selectedText');
+                if(document.getElementById('lowerLine') == undefined) { //Create the selection line if it doesn't exist.
+                    let line = document.createElement('div');
+                    line.id = 'lowerLine';
+                    element.getElementsByClassName("text")[0].appendChild(line);
+                }
+                element.children[0].appendChild(document.getElementById('lowerLine')); //Add the visible selection elements to the element.
+                document.getElementById('updateTextBox').value = element.children[0].children[0].innerText; //Make the update text box match what was selected
+                document.getElementById('updateColorSelect').value = (rulers[id].color == undefined) ? defaultColor : rulers[id].color; //Make the update color box match what was selected.
             }
+            //document.getElementById('customTextBox').value = element.children[0].children[0].innerText;
             
         }
 
@@ -788,11 +983,11 @@
                 return;
             } else {
                 let id = group.children[0].dataset.target;
-                let color = document.getElementById('customColorSelect').value
-                rulers[id].red = parseInt(color.substring(1, 3), 16);
+                rulers[id].color = document.getElementById('updateColorSelect').value
+                /*rulers[id].red = parseInt(color.substring(1, 3), 16);
                 rulers[id].green = parseInt(color.substring(3, 5), 16);
-                rulers[id].blue = parseInt(color.substring(5, 7), 16);
-                group.children[0].children[0].innerText = document.getElementById('customTextBox').value
+                rulers[id].blue = parseInt(color.substring(5, 7), 16);*/
+                group.children[0].children[0].innerText = document.getElementById('updateTextBox').value
                 updateTextBox(id);
                 updateLine(id);
             }
@@ -810,11 +1005,11 @@
         generateText("volume", "tutorialText4", 250, "All the calculations done in this and later tabs use<br>the size determined in the Dimensions tab.");
         generateText("volume", "volumeCalc", 350, "Unupdated");
         generateText("volume", "volumeText", 200, "Unupdated");
-        generateText("volume", "perTitty", 40, "(per titty)");
-        generateText("volume", "totalVolume", 105, "Total Volume =");
+        generateText("volume", "perTitty1", 40, "(per titty)");
+        generateText("volume", "totalVolume", 75, "Volume =");
         generateText("volume", "totalDensity", 70, "Density =");
         generateText("volume", "densityText", 170, "0.945 g/cm^3");
-        generateText("volume", "totalMass", 90, "Total Mass =");
+        generateText("volume", "totalMass", 50, "Mass =");
         generateText("volume", "massText", 200, "real heavy");
         generateText("volume", "perTitty2", 40, "(per titty)");
         generateText("volume", "growthText1", 230, "If her breasts grew by 1cm each week...");
@@ -826,7 +1021,29 @@
         generateText("clothing", "totalSurface", 105, "Bust surface area =");
         generateText("clothing", "surfaceText", 200, "Unupdated");*/
         
-        generateText("milk", "tutorialText7", 360, "Yknow, I actually did a cool lil math segment<br>if you're interested in the physics of milk.<br><a style='color:lightBlue' href='https://drive.google.com/file/d/1ovRZ7gbjbVHSi-djpUUU25U41CHCwnL8/view'>You can learn all about it here.</a><br>I will be updating this calculator eventually, tho.");
+        //generateText("milk", "tutorialText7", 360, "Yknow, I actually did a cool lil math segment<br>if you're interested in the physics of milk.<br><a style='color:lightBlue' href='https://drive.google.com/file/d/1ovRZ7gbjbVHSi-djpUUU25U41CHCwnL8/view'>You can learn all about it here.</a><br>I will be updating this calculator eventually, tho.");
+        generateText("milk", "tutorialText7", 360, "The average woman produces 5% of their breast volume in milk<br>per hour, while lactating.<br>I'm assuming that this holds true for any size.");
+        generateText("milk", "milkRate", 125, "Milk Production Rate =");
+        generateText("milk", "milkText", 250, "unupdated");
+        generateText("milk", "perTitty3", 40, "(per titty)");
+
+        generateText("milk", "currencyRate", 100, "Which is worth");
+        generateText("milk", "currencyText", 150, "unupdated");
+        generateText("milk", "perTitty4", 40, "(per titty)");
+        generateText("milk", "calorieRate", 100, "And contains");
+        generateText("milk", "calorieText", 250, "unupdated");
+        generateText("milk", "perTitty5", 40, "(per titty)");
+        generateText("milk", "feedRate", 150, "Which is enough to feed");
+        generateText("milk", "feedText", 250, "unupdated");
+        generateText("milk", "perTitty6", 40, "(per titty)");
+        generateText("milk", "tutorialText8", 360, "Just to be clear, lactation rate isn't actually affected by boob size in real life.<br>However, this is an unsexy fact, so accordingly, I will ignore it.");
+        generateText("milk", "tutorialText9", 360, "Milk prices are based on the local bulk rate in that respective country.<br>They also assume that the market hasn't been flooded with supply<br>for some mysterious reason.");
+        generateText("milk", "tutorialText10", 360, "Is it possible for a grown adult to sustain themselves off nothing but titty milk?<br>I don't see why not.");
+
+
+        generateText("me", "link", 350, "roannethewolf.github.io/TittyScaling/");
+        generateText("me", "certified", 350, "These calculations were certified<br>by REAL titty engineers");
+        //generateText("me", "perTitty4", 40, "(per titty)");
 
         generateText("export", "supportMeDammit", 400, "Want to support the developer? Draw art of my <a style='color:lightBlue' href='https://www.furaffinity.net/gallery/roannethewolf/folder/1611772/The-White-Fox/' target='_blank'>gigatitty fox</a>. Or any gigatitty fox, but preferably mine.<br>Patreon is for dweebs. My army shall grow, in the most literal sense.");
 
@@ -919,7 +1136,7 @@
 
                     positionLine("volumeCalc", 0.0625, 0.1);
                     positionLine("volumeText", 0.1, 0.22);
-                    positionLine("perTitty", 0.55, 0.27);
+                    positionLine("perTitty1", 0.6, 0.27);
                     positionLine("totalVolume", 0.05, 0.175);
                     positionLine("totalDensity", 0.05, 0.325);
                     positionLine("densityText", 0.1, 0.37);
@@ -935,7 +1152,35 @@
                     positionLine("tutorialText6", 0.03, 0.014);
                 break;
                 case "milk":
+                    moveToCoord(document.getElementById("productivitySelect").children[0], 0.1, 0.11);
+                    moveToCoord(document.getElementById("milkSelect").children[0], 0.6, 0.11);
+                    moveToCoord(document.getElementById("currencySelect").children[0], 0.6, 0.34);
+                    moveToCoord(document.getElementById("feedSelect").children[0], 0.6, 0.6);
+
+                    //I'm gonna do productivity, then milk rate, then calories or sell value, then the equivalent number of babies/adults they could sustain.
                     positionLine("tutorialText7", 0.03, 0.014);
+                    positionLine("milkRate", 0.05, 0.22);
+                    positionLine("milkText", 0.13, 0.25);
+                    positionLine("perTitty3", 0.79, 0.3);
+                    positionLine("currencyRate", 0.05, 0.32);
+                    positionLine("currencyText", 0.1, 0.37);
+                    positionLine("perTitty4", 0.47, 0.42);
+                    positionLine("calorieRate", 0.05, 0.46);
+                    positionLine("calorieText", 0.1, 0.51);
+                    positionLine("perTitty5", 0.74, 0.56);
+                    positionLine("feedRate", 0.05, 0.6);
+                    positionLine("feedText", 0.1, 0.65);
+                    positionLine("perTitty6", 0.74, 0.71);
+                    positionLine("tutorialText8", 0.03, 0.78);
+                    positionLine("tutorialText9", 0.03, 0.85);
+                    positionLine("tutorialText10", 0.03, 0.94);
+                break;
+                case "customize":
+
+                break;
+                case "me":
+                    positionLine("link", 0.0625, 0.65);
+                    positionLine("certified", 0.0625, 0.75);
                 break;
                 case "export":
                     positionLine("supportMeDammit", 0, 1.01);
@@ -949,8 +1194,8 @@
         function positionScreen() {
             //Shrinks all of the displayed elements if the sidebar can't fit vertically (which requires a height of 700px.)
             let box = document.getElementById("standardElements").getBoundingClientRect();
-            if(box.height < 700) {
-                screenFactor = box.height / 700;
+            if(box.height < 750) {
+                screenFactor = box.height / 750;
                 document.getElementById("standardElements").style.transform = "scale(" + screenFactor + ")";
                 document.getElementById("standardElements").style.width = 100 / screenFactor + "%";
                 document.getElementById("standardElements").style.height = 100 / screenFactor + "%";
@@ -1004,10 +1249,8 @@
                 group.children[4].setAttribute('y1', line.y2 - line.flange * Math.cos(angle));
                 group.children[4].setAttribute('y2', line.y2 + line.flange * Math.cos(angle));
 
-                group.style.stroke = "rgb(" + line.red + " " + line.green + " " + line.blue +")";
-                rulers[line.text].red = line.red;
-                rulers[line.text].green = line.green;
-                rulers[line.text].blue = line.blue;
+                group.style.stroke = line.color;
+                rulers[line.text].color = line.color;
                 updateTexts();
             }
         }
@@ -1028,7 +1271,7 @@
                 return scale;
             } else {
                 box.children[0].style.transform = "scale(" + scale + ")" 
-                box.children[0].style.color = "rgb(" + rulers[index].red + " " + rulers[index].green + " " + rulers[index].blue +")";
+                box.children[0].style.color = (rulers[index].color == undefined) ? defaultColor : rulers[index].color;
             }
         }
         positionScreen();
@@ -1038,6 +1281,7 @@
         positionHandles("clothing");
         positionHandles("milk");
         positionHandles("export");
+        positionHandles("me");
 
         let currentlyGrabbed = undefined;
         let grabbedNumber = 1;
@@ -1045,6 +1289,16 @@
         let keys = {}
 
         function updateTexts() {
+            if(document.getElementById("pauseUpdates").checked) { //If the updates are meant to be paused, none of this is necessary.
+                return;
+            }
+            let boobMult = 1;
+            if(document.getElementById('perTittyFalse').checked) {
+                boobMult = 2;
+            } else if (document.getElementById('perTittyCustom').checked) {
+                boobMult = document.getElementById("perTittyCustomNumber").value;
+            }
+
             let referenceNumber = document.getElementById("referenceSelect").children[0].children[0].value * 1
             let referenceUnit = document.getElementById("referenceSelect").children[0].children[1].value;
             document.getElementById("referenceText").children[0].children[0].innerText = isPlural(referenceNumber, referenceUnit);
@@ -1058,7 +1312,7 @@
                     text = getSensicalLengthUnit(referenceMeters * rulers[dim].length / rulers["reference"].length, referenceUnit);
                 } else {
                     let dimUnit = document.getElementById(dim + "Select").children[0].children[1].value;
-                    text = isPlural(Math.round(referenceMeters * rulers[dim].length / rulers["reference"].length / units[dimUnit] * suffixes[dimUnit][2])/suffixes[dimUnit][2], dimUnit);
+                    text = isPlural(Math.round(referenceMeters * rulers[dim].length / rulers["reference"].length / units[dimUnit]), dimUnit);
                 }
                 document.getElementById(dim + "Text").children[0].children[0].innerText = text;
                 updateTextBox(dim + "Text");
@@ -1086,7 +1340,7 @@
             averageDiameter /= (3 - document.getElementById("dim2Select").children[0].children[0].checked - document.getElementById("dim3Select").children[0].children[0].checked);
             //By this point, the text displayed is something like "(1.5cm * 5cm)^2", and the averageDiameter is correct.
             volumeMath += " * &pi;/6"
-            let volumeMeters = averageDiameter ** 3 * Math.PI / 6;
+            let volumeMeters = averageDiameter ** 3 * Math.PI / 6 * boobMult;
 
 
             document.getElementById("volumeCalc").children[0].children[0].innerHTML = volumeMath;
@@ -1113,7 +1367,7 @@
             if(massUnit == "auto") {
                 massText = getSensicalMassUnit(massMeters, referenceUnit);
             } else {
-                massText = isPlural(massMeters / units[massUnit], massUnit);
+                massText = isPlural((massMeters / units[massUnit]), massUnit);
             }
             document.getElementById("massText").children[0].children[0].innerText = massText;
             updateTextBox("massText");
@@ -1123,12 +1377,20 @@
             let growthMeters = document.getElementById("growthSelect1").children[0].children[0].value * units[growthUnits1]; //In meters of diameter per unit of time.
             let growthUnits2 = document.getElementById("growthSelect2").children[0].children[0].value //Mass
             let growthTime2 = document.getElementById("growthSelect2").children[0].children[1].value //Time
-            document.getElementById("growthText1").children[0].children[0].innerText = "If her breasts grew by " + isPlural(growthMeters / units[growthUnits1], growthUnits1) + " each " + suffixes[growthTime1] + "...";
+            document.getElementById("growthText1").children[0].children[0].innerText = "If the breasts grew by " + isPlural(growthMeters / units[growthUnits1], growthUnits1) + " each " + suffixes[growthTime1] + "...";
             updateTextBox("growthText1");
             let growthDelta = growthMeters / units[growthTime1] * units[growthTime2] //The diametral difference over the next of output time.
             let growthVolume = ((averageDiameter + growthDelta)**3 - (averageDiameter**3)) * Math.PI / 6; //The volume gained over the next unit of output time.
-            let growthMass = growthVolume * density * 1000;
-            let growthText = "...Each boob would get "
+            let growthMass = growthVolume * density * 1000 * boobMult;
+            let growthText = ""
+            if(document.getElementById("perTittyTrue").checked) {
+                growthText += "...Each boob would get "
+            } else if (document.getElementById("perTittyFalse").checked) {
+                growthText += "...The bust would get "
+            } else if (document.getElementById("perTittyCustom").checked) {
+                growthText += "...All " + boobMult + " boobs would get "
+            }
+
             if(growthUnits2 == "auto") {
                 growthText += getSensicalMassUnit(growthMass, referenceUnit);
             } else {
@@ -1137,6 +1399,59 @@
             growthText += " heavier every " + suffixes[growthTime2] + "."
             document.getElementById("growthText2").children[0].children[0].innerText = growthText;
             updateTextBox("growthText2");
+
+            let milkProductivity = document.getElementById("productivitySelect").children[0].children[0].value //productivity factor
+            let milkUnit1 = document.getElementById("milkSelect").children[0].children[0].value //volume unit
+            let milkTime = document.getElementById("milkSelect").children[0].children[1].value //Time unit
+
+            let milkRate = volumeMeters * 0.05 * milkProductivity / 3600 //The quantity of milk, in cubic meters, produced per second.
+            let milkProduced = milkRate * units[milkTime] //The quantity of milk, in cubic meters, produced in the specified time.
+
+            let milkString = "";
+            if(milkUnit1 == "auto") {
+                milkString = getSensicalLengthUnit(milkProduced, referenceUnit, true);
+            } else {
+                milkString = isPlural((milkProduced ** (1/3)) / units[milkUnit1], milkUnit1, true);
+            }
+            milkString += " per " + suffixes[milkTime];
+            document.getElementById("milkText").children[0].children[0].innerText = milkString;
+            updateTextBox("milkText");
+
+            let currencyUnit = document.getElementById("currencySelect").children[0].children[0].value
+            let currencyTime = document.getElementById("currencySelect").children[0].children[1].value //Time unit
+
+            let currencyNumber = milkRate * units[currencyUnit] * units[currencyTime] //The amount  of the specified currency produced in the specified time
+            let currencyString = (Math.round(currencyNumber * suffixes[currencyUnit][1]) / suffixes[currencyUnit][1]).toLocaleString() + suffixes[currencyUnit][0];
+            currencyString += " / " + suffixes[currencyTime];
+
+            document.getElementById("currencyText").children[0].children[0].innerText = currencyString;
+            updateTextBox("currencyText");
+
+            let calorieString = Math.round(milkRate * units[currencyTime] * units["cal"]).toLocaleString() + " calories / " + suffixes[currencyTime];
+            document.getElementById("calorieText").children[0].children[0].innerText = calorieString;
+            updateTextBox("calorieText");
+
+            let feedUnit = document.getElementById("feedSelect").children[0].children[0].value;
+            let feedString = isPlural((milkRate / units[feedUnit]), feedUnit);
+            document.getElementById("feedText").children[0].children[0].innerText = feedString;
+            updateTextBox("feedText");
+
+            "That's worth <br>(currency) / (time)"
+            "And contains <br> (kCal) / (time)"
+            "Which is enough to sustain the caloric/power reqirements of  (babies/adults/cities)" 
+
+            let perTittyText = ""
+            if(document.getElementById("perTittyTrue").checked) {
+                perTittyText = "(per titty)"
+            } else if (document.getElementById("perTittyFalse").checked) {
+                perTittyText = "(in total)"
+            } else if (document.getElementById("perTittyCustom").checked) {
+                perTittyText = "(per " + boobMult + " boobs)"
+            }
+            for(let i = 1; i <= 6; i++) {
+                document.getElementById("perTitty" + i).children[0].children[0].innerText = perTittyText
+                updateTextBox("perTitty" + i);
+            }
         }
 
         document.getElementById("referenceSelect").children[0].children[0].addEventListener('input', updateTexts);
@@ -1156,26 +1471,33 @@
         document.getElementById("growthSelect2").children[0].children[0].addEventListener('input', updateTexts);
         document.getElementById("growthSelect2").children[0].children[1].addEventListener('input', updateTexts);
 
+        document.getElementById("productivitySelect").children[0].children[0].addEventListener('input', updateTexts);
+        document.getElementById("milkSelect").children[0].children[0].addEventListener('input', updateTexts);
+        document.getElementById("milkSelect").children[0].children[1].addEventListener('input', updateTexts);
+        document.getElementById("currencySelect").children[0].children[0].addEventListener('input', updateTexts);
+        document.getElementById("currencySelect").children[0].children[1].addEventListener('input', updateTexts);
+        document.getElementById("feedSelect").children[0].children[0].addEventListener('input', updateTexts);
+
         document.getElementById('newTextButton').addEventListener('click', newCustomText);
-        document.getElementById('updateTextButton').addEventListener('click', updateText);
+        //document.getElementById('updateTextButton').addEventListener('click', updateText);
+        document.getElementById('updateTextBox').addEventListener('input', updateText);
+        document.getElementById('updateColorSelect').addEventListener('input', updateText);
+        document.getElementById('perTittyTrue').addEventListener('change', updateTexts);
+        document.getElementById('perTittyFalse').addEventListener('change', updateTexts);
+        document.getElementById('perTittyCustom').addEventListener('change', updateTexts);
+        document.getElementById('perTittyCustomNumber').addEventListener('input', updateTexts);
+        document.getElementById('pauseUpdates').addEventListener('input', updateTexts);
+
         document.getElementById('globalColorSelect').addEventListener('input', globalColor);
         document.getElementById('screenshotButton').addEventListener('click', takeScreenshot);
         document.getElementById('saveToClipboard').addEventListener('click', saveClipboard);
         document.getElementById('saveToFile').addEventListener('click', saveFile);
 
         function globalColor() {
-            let color = document.getElementById('globalColorSelect').value;
-            let presets = {
-                red: parseInt(color.substring(1, 3), 16),
-                green: parseInt(color.substring(3, 5), 16),
-                blue: parseInt(color.substring(5, 7), 16)
-            }
+            defaultColor = document.getElementById('globalColorSelect').value;
             for(let group of document.getElementsByClassName('svgText')) {
                 if(!group.id.includes('newText') && !group.id.includes('dim')) {
                     let id = group.id;
-                    rulers[id].red = presets.red;
-                    rulers[id].green = presets.green;
-                    rulers[id].blue = presets.blue;
                     updateLine(rulers[id]);
                     updateTextBox(id);
                 }
@@ -1189,7 +1511,7 @@
                 green: parseInt(color.substring(3, 5), 16),
                 blue: parseInt(color.substring(5, 7), 16)
             }
-            generateText("export", "newText" + customTexts, 300, document.getElementById('customTextBox').value.replaceAll('\n', '<br>'), presets);
+            generateText("customize", "newText" + customTexts, 300, document.getElementById('customTextBox').value.replaceAll('\n', '<br>'), color);
             positionLineStupid("newText" + customTexts, 0.03, 0.4);
             //console.log(document.getElementById('customTextBox').value);
             customTexts++
@@ -1199,14 +1521,17 @@
             let sliders = sliderGroup.getElementsByClassName("slider");
             sliders[0].addEventListener('input', (event) => {
                 line.red = event.target.value;
+                line.color = rgbToHex(line.red, line.green, line.blue);
                 updateLine(line);
             })
             sliders[1].addEventListener('input', (event) => {
                 line.green = event.target.value;
+                line.color = rgbToHex(line.red, line.green, line.blue);
                 updateLine(line);
             })
             sliders[2].addEventListener('input', (event) => {
                 line.blue = event.target.value;
+                line.color = rgbToHex(line.red, line.green, line.blue);
                 updateLine(line);
             })
             sliders[3].addEventListener('input', (event) => {
@@ -1362,8 +1687,8 @@
                 }
                 let angle = Math.atan2(delta.y, delta.x);
                 let canvasScale = canvas.width / imageBox.width;
-                ctx.fillStyle = 'rgb(' + data.red + ',' + data.green + ',' + data.blue +")";
-                ctx.strokeStyle = 'rgb(' + data.red + ',' + data.green + ',' + data.blue +")";
+                ctx.fillStyle = (data.color == undefined) ? defaultColor : data.color;
+                ctx.strokeStyle = (data.color == undefined) ? defaultColor : data.color;
                 ctx.setTransform(1, 0, 0, 1, 0, 0);
                 if (data.type == "text") {
                     ctx.translate(newPosition.x1, newPosition.y1);
@@ -1428,7 +1753,24 @@
 
         function isPlural(number, unit, volume = false) {
             //Takes the singular and plural options as strings to be appended to the number.
-            if(number == 1 && volume == false) {
+            if(volume == false) {
+                let newNumber = (Math.round(number * suffixes[unit][2])/suffixes[unit][2]);
+                if(newNumber == 1) {
+                    return newNumber.toLocaleString() + suffixes[unit][0]
+                } else {
+                    return newNumber.toLocaleString() + suffixes[unit][1]
+                }
+            } else {
+                let newNumber = (Math.round((number) ** 3 * suffixes[unit][2])/suffixes[unit][2]);
+                if(newNumber == 1) {
+                    return newNumber.toLocaleString() + suffixes[unit][3]
+                } else {
+                    return newNumber.toLocaleString() + suffixes[unit][4]
+                }
+            }
+            
+           
+            /*if(number == 1 && volume == false) {
                 return (Math.round(number * suffixes[unit][2])/suffixes[unit][2]).toLocaleString() + suffixes[unit][0];
             } else if(volume == false) {
                 return (Math.round(number * suffixes[unit][2])/suffixes[unit][2]).toLocaleString() + suffixes[unit][1];
@@ -1436,10 +1778,14 @@
                 return (Math.round((number) ** 3 * suffixes[unit][2])/suffixes[unit][2]).toLocaleString() + suffixes[unit][3];
             } else {
                 return (Math.round((number) ** 3 * suffixes[unit][2])/suffixes[unit][2]).toLocaleString() + suffixes[unit][4];
-            }
+            }*/
         }
 
-        function getSensicalLengthUnit(number, referenceUnit, volume = false) {
+         console.log(isPlural(1.1, "m"))
+         console.log(Math.round(10000 * units["village"] * suffixes["village"][2])/suffixes["village"][2])
+         console.log(isPlural(10000 * units["village"], "village"))
+
+        function getSensicalLengthUnit(number, referenceUnit = "cm", volume = false) {
             //Finds an appropriate unit for a value of length. Maintains metric/imperial separation for as long as reasonable.
             //The number is always given in meters and converted in post.
             if(volume) {
