@@ -229,6 +229,7 @@
             <div class="sideTab" onclick="switchTabs('milk')">Milk</div>
         </div>
         <div class="sideTabTray">
+            <div class="sideTab" onclick="switchTabs('tutorial')">Tutorial</div>
             <div class="sideTab" onclick="switchTabs('customize')">Customize</div>
             <div class="sideTab" onclick="switchTabs('me')">Me :)</div>
             <div class="sideTab" onclick="switchTabs('export')">Export</div>
@@ -245,6 +246,21 @@
                     <button id="saveToClipboard">Save To Clipboard</button>
                     <button id="saveToFile">Save To File</button>
                 </div>
+            </div>
+            <div id="tutorialSettings">
+                <div style='padding: 10px; white-space: pre-wrap;' font-size: 14px;>This website is used to measure boobs.
+You do this by using lines to measure the width of ONE boob from several directions.
+
+Here is a good example:             And a bad example:
+<img src="https://roannethewolf.github.io/TittyScaling/TittyScalingExample.png" style="width: 100%;">
+<span style="font-size: 12px">Start in "Dimensions" and move the lines onto your image.
+Then you can see what the measurements mean in the other tabs.
+
+Character owned by <a href="https://bsky.app/profile/miyuthekitsune.bsky.social" target="_blank" style="color: lightSkyBlue">MiyuTheKitsune</a>. This art was drawn by <a href="https://bsky.app/profile/lunarspy.bsky.social" target="_blank" style="color: lightSkyBlue">Lunarspy</a>.
+Make sure you credit whoever drew it if it wasn't you!
+</span>
+                </div>
+                
             </div>
             <div id="customizeSettings">
                 <div style='padding: 10px;'>
@@ -861,6 +877,11 @@
             } else {
                 document.getElementById("exportSettings").style.display = 'none';
             }
+            if(currentTab == "tutorial") {
+                document.getElementById("tutorialSettings").style.display = 'block';
+            } else {
+                document.getElementById("tutorialSettings").style.display = 'none';
+            }
             if(currentTab == "customize") {
                 document.getElementById("customizeSettings").style.display = 'block';
             } else {
@@ -874,7 +895,7 @@
             }
         }
 
-        switchTabs('dimensions');
+        switchTabs('tutorial');
 
         function generateText(tab, id, width, text, color = undefined) {
             //width *= screenFactor;
